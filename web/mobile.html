@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriAI Mobile App - Interactive Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            background: #0f172a;
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .top-nav {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: #1e293b;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .back-link:hover { color: #ffffff; background: #334155; }
+        .mode-title { color: #f8fafc; font-size: 1.1rem; font-weight: 700; }
+
+        /* Smartphone Frame */
+        .phone-mockup {
+            width: 390px;
+            height: 800px;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 12px #334155;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .notch {
+            width: 140px;
+            height: 25px;
+            background: #000000;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 100;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            padding: 38px 18px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mobile-title { font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+        .mobile-sub { font-size: 0.75rem; color: #64748b; }
+        .btn-log-mobile {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Screen Viewport */
+        .screen-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f8fafc;
+        }
+
+        /* Mobile Cards */
+        .m-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        }
+        .m-card-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .m-cal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .m-cal-big { font-size: 2.2rem; font-weight: 800; }
+        .m-badge-rem {
+            background: #ecfdf5;
+            padding: 8px 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .m-rem-num { font-size: 1.2rem; font-weight: 800; color: #059669; }
+        .m-rem-txt { font-size: 0.68rem; font-weight: 700; color: #059669; }
+
+        .m-pills-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .m-pill {
+            width: 31%;
+            border: 1px solid;
+            border-radius: 10px;
+            padding: 8px 6px;
+            text-align: center;
+        }
+        .m-pill-p { border-color: #3b82f6; }
+        .m-pill-c { border-color: #f59e0b; }
+        .m-pill-f { border-color: #ef4444; }
+        .m-pill-title { font-size: 0.68rem; font-weight: 700; color: #64748b; }
+        .m-pill-val { font-size: 0.82rem; font-weight: 700; margin-top: 2px; }
+
+        /* Hydration */
+        .water-m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .water-m-title { font-size: 0.88rem; font-weight: 700; }
+        .water-m-val { font-size: 0.95rem; font-weight: 800; color: #06b6d4; }
+        .water-btn-row { display: flex; gap: 8px; margin-top: 10px; }
+        .water-btn {
+            background: #e0f2fe;
+            color: #0284c7;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Meal Item */
+        .m-meal-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .m-meal-top { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; margin-bottom: 4px; }
+        .m-meal-tag { color: #10b981; text-transform: uppercase; }
+        .m-meal-title { font-size: 0.88rem; font-weight: 700; }
+        .m-meal-desc { font-size: 0.75rem; color: #64748b; margin-top: 3px; }
+
+        /* Scanner Screen */
+        .scanner-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            padding: 20px;
+        }
+        .scanner-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .scanner-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+        .scanner-desc { font-size: 0.82rem; color: #64748b; line-height: 1.4; margin-bottom: 20px; }
+        .btn-snap {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .detected-lens-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 18px;
+            text-align: left;
+            width: 100%;
+        }
+
+        /* Chat Screen */
+        .chat-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .m-chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .m-bubble { padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; max-width: 85%; }
+        .m-bubble-ai { background: #ffffff; border: 1px solid #e2e8f0; align-self: flex-start; }
+        .m-bubble-user { background: #0f172a; color: #ffffff; align-self: flex-end; }
+        .m-chat-input-row { display: flex; gap: 6px; padding-top: 10px; }
+        .m-chat-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .btn-m-send {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Bottom Tab Bar */
+        .bottom-tabs {
+            height: 64px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #64748b;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .tab-btn.active { color: #10b981; }
+        .tab-icon { font-size: 1.2rem; }
+
+        /* Modal */
+        .m-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: flex;
+            align-items: flex-end;
+            z-index: 100;
+        }
+        .m-modal-sheet {
+            background: #ffffff;
+            width: 100%;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 24px 20px 30px;
+        }
+        .m-modal-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 14px; }
+        .m-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.88rem;
+        }
+        .m-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="index.html" class="back-link">← Switch to Desktop Dashboard</a>
+        <span class="mode-title">📱 Mobile App Simulator (React Native Mode)</span>
+    </div>
+
+    <!-- Smartphone Mockup Container -->
+    <div class="phone-mockup">
+        <div class="notch"></div>
+
+        <!-- Header -->
+        <header class="mobile-header">
+            <div>
+                <div class="mobile-title">NutriAI Mobile</div>
+                <div class="mobile-sub">Personalized Nutrition Engine</div>
+            </div>
+            <button class="btn-log-mobile" onclick="openLogModal()">+ Log</button>
+        </header>
+
+        <!-- View: Today / Dashboard -->
+        <div class="screen-content" id="view-home">
+            <!-- Calorie Budget Card -->
+            <div class="m-card">
+                <div class="m-card-label">Daily Energy Budget</div>
+                <div class="m-cal-row">
+                    <div>
+                        <div class="m-cal-big" id="m-consumed-cal">921</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">Consumed kcal</div>
+                    </div>
+                    <div class="m-badge-rem">
+                        <div class="m-rem-num" id="m-rem-cal">929</div>
+                        <div class="m-rem-txt">Remaining</div>
+                    </div>
+                </div>
+
+                <div class="m-pills-row">
+                    <div class="m-pill m-pill-p">
+                        <div class="m-pill-title">Protein</div>
+                        <div class="m-pill-val" id="m-p-val">85.9 / 135g</div>
+                    </div>
+                    <div class="m-pill m-pill-c">
+                        <div class="m-pill-title">Carbs</div>
+                        <div class="m-pill-val">103 / 180g</div>
+                    </div>
+                    <div class="m-pill m-pill-f">
+                        <div class="m-pill-title">Fats</div>
+                        <div class="m-pill-val">18 / 55g</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hydration Card -->
+            <div class="m-card">
+                <div class="water-m-header">
+                    <span class="water-m-title">💧 Hydration Tracker</span>
+                    <span class="water-m-val" id="m-water-val">1,600 / 2,500 ml</span>
+                </div>
+                <div class="water-btn-row">
+                    <button class="water-btn" onclick="addMWater(250)">+250ml</button>
+                    <button class="water-btn" onclick="addMWater(500)">+500ml</button>
+                    <button class="water-btn" style="background: #fee2e2; color: #dc2626;" onclick="resetMWater()">Reset</button>
+                </div>
+            </div>
+
+            <!-- Meals List -->
+            <div style="font-size: 0.88rem; font-weight: 700; margin: 14px 0 8px; color: #0f172a;">Today's Logged Meals</div>
+            <div id="m-meals-container">
+                <div class="m-meal-item">
+                    <div class="m-meal-top">
+                        <span class="m-meal-tag">Breakfast</span>
+                        <span>364 kcal</span>
+                    </div>
+                    <div class="m-meal-title">Oatmeal with Whey & Berries</div>
+                    <div class="m-meal-desc">Protein: 32.2g • Carbs: 49.5g • Fat: 4.5g</div>
+                </div>
+                <div class="m-meal-item">
+                    <div class="m-meal-top">
+                        <span class="m-meal-tag">Lunch</span>
+                        <span>557 kcal</span>
+                    </div>
+                    <div class="m-meal-title">Chicken, Rice, Broccoli & Avocado</div>
+                    <div class="m-meal-desc">Protein: 53.7g • Carbs: 53.5g • Fat: 13.5g</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Camera Lens Scanner -->
+        <div class="screen-content" id="view-camera" style="display: none;">
+            <div class="scanner-view">
+                <div class="scanner-icon">📸</div>
+                <div class="scanner-title">AI Food Lens Scanner</div>
+                <p class="scanner-desc">Point your phone camera at your meal. MobileNetV2 neural vision classifies ingredients, portion weights, and macronutrients automatically.</p>
+                <button class="btn-snap" onclick="simulateCameraSnap()">Snap Plate Photo</button>
+
+                <div class="detected-lens-box" id="lens-result-box" style="display: none;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">CNN Prediction Detected</div>
+                    <div style="font-weight: 800; font-size: 1.05rem; margin: 4px 0;" id="lens-title">Grilled Salmon with Asparagus</div>
+                    <div style="font-size: 0.8rem; color: #334155;">330 kcal • 41g Protein • 5g Carbs • 17g Fat</div>
+                    <div style="margin-top: 8px; font-size: 0.75rem; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; display: inline-block; font-weight: 700;">
+                        ANN: Adequate-Protein Power
+                    </div>
+                    <button class="btn-log-mobile" style="width: 100%; margin-top: 10px; padding: 8px;" onclick="addScannedToMobileMeals()">+ Add to Daily Log</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: AI Coach Chat -->
+        <div class="screen-content" id="view-chat" style="display: none;">
+            <div class="chat-view">
+                <div class="m-chat-messages" id="m-chat-box">
+                    <div class="m-bubble m-bubble-ai">
+                        Hi Alex! You've logged 921 calories and 85.9g of protein so far. Aim for ~49g of protein for dinner to finish within your Fat Loss deficit!
+                    </div>
+                </div>
+                <form class="m-chat-input-row" onsubmit="sendMChat(event)">
+                    <input type="text" class="m-chat-input" id="m-chat-txt" placeholder="Ask your nutritionist coach..." required>
+                    <button type="submit" class="btn-m-send">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Tabs -->
+        <nav class="bottom-tabs">
+            <button class="tab-btn active" id="tab-home-btn" onclick="switchTab('home')">
+                <span class="tab-icon">📊</span>
+                <span>Today</span>
+            </button>
+            <button class="tab-btn" id="tab-camera-btn" onclick="switchTab('camera')">
+                <span class="tab-icon">📸</span>
+                <span>Scanner</span>
+            </button>
+            <button class="tab-btn" id="tab-chat-btn" onclick="switchTab('chat')">
+                <span class="tab-icon">🤖</span>
+                <span>AI Coach</span>
+            </button>
+        </nav>
+
+        <!-- Log Food Modal Sheet -->
+        <div class="m-modal-overlay" id="m-log-modal" style="display: none;">
+            <div class="m-modal-sheet">
+                <div class="m-modal-title">Log Food Item</div>
+                <input type="text" class="m-input" id="m-in-name" placeholder="Food name (e.g. Pan-seared Salmon)" required>
+                <input type="number" class="m-input" id="m-in-cal" placeholder="Calories (kcal)" required>
+                <input type="number" class="m-input" id="m-in-prot" placeholder="Protein (g)" required>
+                <div class="m-modal-actions">
+                    <button class="water-btn" onclick="closeLogModal()">Cancel</button>
+                    <button class="btn-log-mobile" onclick="saveMobileMeal()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mWater = 1600;
+        let mConsumed = 921;
+        let mProtein = 85.9;
+        const TARGET_CAL = 1850;
+
+        function switchTab(tab) {
+            document.getElementById('view-home').style.display = tab === 'home' ? 'block' : 'none';
+            document.getElementById('view-camera').style.display = tab === 'camera' ? 'flex' : 'none';
+            document.getElementById('view-chat').style.display = tab === 'chat' ? 'flex' : 'none';
+
+            document.getElementById('tab-home-btn').classList.toggle('active', tab === 'home');
+            document.getElementById('tab-camera-btn').classList.toggle('active', tab === 'camera');
+            document.getElementById('tab-chat-btn').classList.toggle('active', tab === 'chat');
+        }
+
+        function addMWater(ml) {
+            mWater += ml;
+            document.getElementById('m-water-val').textContent = `${mWater.toLocaleString()} / 2,500 ml`;
+        }
+
+        function resetMWater() {
+            mWater = 0;
+            document.getElementById('m-water-val').textContent = `0 / 2,500 ml`;
+        }
+
+        function openLogModal() {
+            document.getElementById('m-log-modal').style.display = 'flex';
+        }
+
+        function closeLogModal() {
+            document.getElementById('m-log-modal').style.display = 'none';
+        }
+
+        function saveMobileMeal() {
+            const name = document.getElementById('m-in-name').value;
+            const cal = parseFloat(document.getElementById('m-in-cal').value) || 0;
+            const prot = parseFloat(document.getElementById('m-in-prot').value) || 0;
+            if (!name || !cal) return;
+
+            addMealToContainer('Dinner', name, cal, prot);
+            updateTotals(cal, prot);
+            closeLogModal();
+        }
+
+        function simulateCameraSnap() {
+            const box = document.getElementById('lens-result-box');
+            box.style.display = 'block';
+        }
+
+        function addScannedToMobileMeals() {
+            addMealToContainer('Dinner', 'Grilled Salmon with Asparagus (200g)', 330, 41.0);
+            updateTotals(330, 41.0);
+            switchTab('home');
+        }
+
+        function addMealToContainer(category, title, cal, prot) {
+            const container = document.getElementById('m-meals-container');
+            const item = document.createElement('div');
+            item.className = 'm-meal-item';
+            item.innerHTML = `
+                <div class="m-meal-top">
+                    <span class="m-meal-tag">${category}</span>
+                    <span>${cal} kcal</span>
+                </div>
+                <div class="m-meal-title">${title}</div>
+                <div class="m-meal-desc">Protein: ${prot}g • Logged via AI Assistant</div>
+            `;
+            container.appendChild(item);
+        }
+
+        function updateTotals(cal, prot) {
+            mConsumed += cal;
+            mProtein += prot;
+            document.getElementById('m-consumed-cal').textContent = Math.round(mConsumed);
+            document.getElementById('m-rem-cal').textContent = Math.max(0, Math.round(TARGET_CAL - mConsumed));
+            document.getElementById('m-p-val').textContent = `${mProtein.toFixed(1)} / 135g`;
+        }
+
+        function sendMChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('m-chat-txt');
+            const txt = input.value.trim();
+            if (!txt) return;
+
+            const box = document.getElementById('m-chat-box');
+            box.innerHTML += `<div class="m-bubble m-bubble-user">${txt}</div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                const rem = Math.max(0, Math.round(TARGET_CAL - mConsumed));
+                box.innerHTML += `<div class="m-bubble m-bubble-ai">Great question! You have ${rem} kcal remaining today. Prioritize lean protein and high-fiber greens for your next meal!</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 500);
+        }
+    </script>
+</body>
+</html>

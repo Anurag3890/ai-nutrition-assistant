@@ -151,6 +151,23 @@ try:
     def get_summary(user_id: str, date_str: Optional[str] = None):
         return data_store.get_daily_summary(user_id, date_str or date.today().isoformat())
 
+    @app.get("/api/users")
+    def list_users():
+        return data_store.get_all_users()
+
+    @app.post("/api/users/register")
+    def register_user(payload: dict = Body(...)):
+        uid = payload.get("id") or ("user_" + str(abs(hash(payload.get("email", ""))))[:8])
+        payload["id"] = uid
+        data_store.create_or_update_user(payload)
+        return {"status": "created", "user": data_store.get_user(uid)}
+
+    @app.post("/api/oracle/ask")
+    def ask_omni_oracle(payload: dict = Body(...)):
+        query = payload.get("query", "")
+        category = payload.get("category", "general")
+        return genai_coach.consult_omni_oracle(query, category)
+
     @app.post("/api/coach/chat")
     def chat_coach(payload: dict = Body(...)):
         user_id = payload.get("user_id", "user_demo_01")

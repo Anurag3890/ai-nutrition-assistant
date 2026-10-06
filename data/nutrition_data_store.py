@@ -436,7 +436,86 @@ class NutritionDataStore:
             "daily_water_target_ml": 2500.0
         })
 
-        # 2. Add Standard Food Database items
+    def get_all_users(self) -> List[Dict[str, Any]]:
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username, email, full_name, primary_goal, dietary_preference, daily_calorie_target, daily_protein_target_g FROM users")
+            return [dict(row) for row in cursor.fetchall()]
+
+    # ---------------------------------------------------------
+    # SEEDING INITIAL REALISTIC DATA FOR MULTIPLE USERS
+    # ---------------------------------------------------------
+    def seed_initial_data(self) -> str:
+        """Populates realistic foods and 3 distinct user profiles (Fat Loss, Muscle Gain, Athlete)."""
+        today_str = date.today().isoformat()
+
+        # 1. USER 1: Alex Morgan (Fat Loss)
+        u1_id = "user_demo_01"
+        self.create_or_update_user({
+            "id": u1_id,
+            "username": "alex_morgan",
+            "email": "alex@nutriai.io",
+            "full_name": "Alex Morgan",
+            "age": 27,
+            "sex": "female",
+            "height_cm": 168.0,
+            "current_weight_kg": 64.0,
+            "target_weight_kg": 60.0,
+            "activity_level": "moderately_active",
+            "primary_goal": "fat_loss",
+            "dietary_preference": "omnivore",
+            "daily_calorie_target": 1850.0,
+            "daily_protein_target_g": 135.0,
+            "daily_carbs_target_g": 180.0,
+            "daily_fat_target_g": 55.0,
+            "daily_water_target_ml": 2500.0
+        })
+
+        # 2. USER 2: Sarah Chen (Keto & Metabolic Health)
+        u2_id = "user_sarah_keto"
+        self.create_or_update_user({
+            "id": u2_id,
+            "username": "sarah_chen",
+            "email": "sarah@nutriai.io",
+            "full_name": "Sarah Chen",
+            "age": 31,
+            "sex": "female",
+            "height_cm": 165.0,
+            "current_weight_kg": 58.0,
+            "target_weight_kg": 57.0,
+            "activity_level": "very_active",
+            "primary_goal": "metabolic_health",
+            "dietary_preference": "keto",
+            "daily_calorie_target": 2100.0,
+            "daily_protein_target_g": 140.0,
+            "daily_carbs_target_g": 35.0,
+            "daily_fat_target_g": 155.0,
+            "daily_water_target_ml": 3000.0
+        })
+
+        # 3. USER 3: Marcus Vance (Muscle Gain & Performance)
+        u3_id = "user_marcus_athlete"
+        self.create_or_update_user({
+            "id": u3_id,
+            "username": "marcus_vance",
+            "email": "marcus@nutriai.io",
+            "full_name": "Marcus Vance",
+            "age": 25,
+            "sex": "male",
+            "height_cm": 184.0,
+            "current_weight_kg": 82.0,
+            "target_weight_kg": 86.0,
+            "activity_level": "extra_active",
+            "primary_goal": "muscle_gain",
+            "dietary_preference": "omnivore",
+            "daily_calorie_target": 3100.0,
+            "daily_protein_target_g": 195.0,
+            "daily_carbs_target_g": 410.0,
+            "daily_fat_target_g": 75.0,
+            "daily_water_target_ml": 3800.0
+        })
+
+        # Add Standard Food Database items
         sample_foods = [
             {"name": "Rolled Oats (Dry)", "brand": "Generic", "category": "Grains", "serving_size": 50, "serving_unit": "g", "calories": 187, "protein_g": 6.5, "carbs_total_g": 33, "fiber_g": 5.0, "fat_total_g": 3.2, "iron_mg": 2.1},
             {"name": "Whey Protein Isolate (Vanilla)", "brand": "Optimum", "category": "Supplements", "serving_size": 30, "serving_unit": "g", "calories": 120, "protein_g": 25.0, "carbs_total_g": 2.0, "fiber_g": 0.0, "fat_total_g": 1.0, "calcium_mg": 140},
@@ -449,75 +528,25 @@ class NutritionDataStore:
             {"name": "Roasted Sweet Potato", "brand": "Homemade", "category": "Vegetables", "serving_size": 150, "serving_unit": "g", "calories": 135, "protein_g": 3.0, "carbs_total_g": 31.0, "fiber_g": 4.5, "fat_total_g": 0.2, "potassium_mg": 500},
             {"name": "Greek Yogurt (Nonfat Plain)", "brand": "Chobani", "category": "Dairy", "serving_size": 170, "serving_unit": "g", "calories": 100, "protein_g": 18.0, "carbs_total_g": 6.0, "fiber_g": 0.0, "fat_total_g": 0.7, "calcium_mg": 200}
         ]
-
         for item in sample_foods:
             self.add_food_item(item)
 
-        today_str = date.today().isoformat()
+        # Log Alex's meals
+        self.log_meal({"user_id": u1_id, "log_date": today_str, "log_time": "08:15:00", "meal_type": "breakfast", "food_name": "Oatmeal with Blueberries & Vanilla Whey", "calories": 364, "protein_g": 32.2, "carbs_g": 49.5, "fat_g": 4.5, "fiber_g": 7.4})
+        self.log_meal({"user_id": u1_id, "log_date": today_str, "log_time": "13:00:00", "meal_type": "lunch", "food_name": "Grilled Chicken, Jasmine Rice & Broccoli with Avocado", "calories": 557, "protein_g": 53.7, "carbs_g": 53.5, "fat_g": 13.5, "fiber_g": 6.6})
+        self.log_water(u1_id, 1600, "water", today_str)
 
-        # 3. Log Breakfast
-        self.log_meal({
-            "user_id": user_id,
-            "log_date": today_str,
-            "log_time": "08:15:00",
-            "meal_type": "breakfast",
-            "food_name": "Oatmeal with Blueberries & Vanilla Whey",
-            "quantity": 1,
-            "serving_unit": "bowl",
-            "calories": 364,
-            "protein_g": 32.2,
-            "carbs_g": 49.5,
-            "fat_g": 4.5,
-            "fiber_g": 7.4,
-            "ai_analysis_summary": "High-fiber sustained energy breakfast with fast-acting protein source."
-        })
+        # Log Sarah's Keto meals
+        self.log_meal({"user_id": u2_id, "log_date": today_str, "log_time": "09:00:00", "meal_type": "breakfast", "food_name": "Avocado & 3 Poached Pasture-Raised Eggs in Olive Oil", "calories": 480, "protein_g": 24.0, "carbs_g": 5.0, "fat_g": 40.0, "fiber_g": 4.0})
+        self.log_meal({"user_id": u2_id, "log_date": today_str, "log_time": "13:30:00", "meal_type": "lunch", "food_name": "Wild Salmon Fillet with Asparagus & Garlic Herb Butter", "calories": 620, "protein_g": 45.0, "carbs_g": 4.0, "fat_g": 46.0, "fiber_g": 3.0})
+        self.log_water(u2_id, 2200, "water", today_str)
 
-        # 4. Log Lunch
-        self.log_meal({
-            "user_id": user_id,
-            "log_date": today_str,
-            "log_time": "13:00:00",
-            "meal_type": "lunch",
-            "food_name": "Grilled Chicken, Jasmine Rice & Broccoli with Avocado",
-            "quantity": 1,
-            "serving_unit": "plate",
-            "calories": 557,
-            "protein_g": 53.7,
-            "carbs_g": 53.5,
-            "fat_g": 13.5,
-            "fiber_g": 6.6,
-            "ai_analysis_summary": "Balanced plate: Lean protein, micronutrient-dense cruciferous greens and healthy monounsaturated fats."
-        })
+        # Log Marcus's Athlete meals
+        self.log_meal({"user_id": u3_id, "log_date": today_str, "log_time": "07:30:00", "meal_type": "breakfast", "food_name": "Monster Protein Oats with Banana, Honey & Peanut Butter", "calories": 850, "protein_g": 55.0, "carbs_g": 115.0, "fat_g": 22.0, "fiber_g": 12.0})
+        self.log_meal({"user_id": u3_id, "log_date": today_str, "log_time": "12:45:00", "meal_type": "lunch", "food_name": "Double Chicken Breast Rice Bowl with Sweet Potato", "calories": 920, "protein_g": 68.0, "carbs_g": 125.0, "fat_g": 16.0, "fiber_g": 9.0})
+        self.log_water(u3_id, 2600, "water", today_str)
 
-        # 5. Log Water
-        self.log_water(user_id, 750, "water", today_str)
-        self.log_water(user_id, 500, "water", today_str)
-        self.log_water(user_id, 350, "herbal_tea", today_str)
-
-        # 6. Log Morning Biometrics
-        self.log_biometrics(user_id, {
-            "log_date": today_str,
-            "weight_kg": 63.8,
-            "energy_level": 8,
-            "sleep_hours": 7.5,
-            "sleep_quality": 8,
-            "digestive_symptoms": "normal",
-            "notes": "Felt refreshed, hunger was low during fasting window."
-        })
-
-        # 7. AI Nutritionist Consultation Sample
-        session_id = "session_onboarding_01"
-        self.log_ai_message(
-            user_id, session_id, "user",
-            "Hey! I'm trying to hit 135g of protein today without blowing past 1850 kcal. How is my day looking so far?"
-        )
-        self.log_ai_message(
-            user_id, session_id, "assistant",
-            "You are doing fantastic today, Alex! Through breakfast and lunch, you've already secured 85.9g of protein and 921 kcal. That leaves you with 49.1g of protein and about 929 kcal for dinner and an evening snack. A pan-seared salmon fillet (150g) with roasted sweet potatoes and a side of Greek yogurt for dessert will effortlessly meet your protein target while staying right inside your fat-loss deficit!",
-            "meal_critique"
-        )
-
-        return user_id
+        return u1_id
 
 if __name__ == "__main__":
     store = NutritionDataStore()

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriAI - Comprehensive AI Nutrition Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🥗</span>
+                <span class="logo-text">Nutri<strong>AI</strong></span>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">📊</span> Overview
+                </button>
+                <button class="nav-item" data-tab="scanner" onclick="scrollToScanner()">
+                    <span class="nav-icon">📸</span> AI Food Scanner
+                </button>
+                <button class="nav-item" data-tab="patterns" onclick="scrollToPatterns()">
+                    <span class="nav-icon">⏳</span> Eating Patterns (RNN)
+                </button>
+                <button class="nav-item" data-tab="report" onclick="openWeeklyReportModal()">
+                    <span class="nav-icon">📑</span> Weekly Report (GenAI)
+                </button>
+            </nav>
+
+            <div class="user-badge">
+                <div class="avatar">AM</div>
+                <div class="user-meta">
+                    <div class="user-name">Alex Morgan</div>
+                    <div class="user-goal">Target: Fat Loss (1,850 kcal)</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-bar">
+                <div>
+                    <h1>AI Nutrition Assistant Dashboard</h1>
+                    <p class="subtitle" id="current-date-display">10-Module Integrated System • Today, October 6, 2026</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="btn-quick-water">💧 +250ml Water</button>
+                    <button class="btn btn-primary" id="btn-open-log-modal">+ Log Meal</button>
+                </div>
+            </header>
+
+            <!-- Macros Highlight Cards -->
+            <section class="macro-cards-grid">
+                <!-- Calories Card -->
+                <div class="card macro-card calories-card">
+                    <div class="card-header">
+                        <span class="card-title">Calories</span>
+                        <span class="card-pill" id="cal-status-pill">On Target</span>
+                    </div>
+                    <div class="macro-values">
+                        <div class="primary-metric" id="calories-consumed">921</div>
+                        <div class="secondary-metric">/ <span id="calories-target">1850</span> kcal</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar cal-bar" id="cal-progress-bar" style="width: 50%;"></div>
+                    </div>
+                    <div class="macro-footer">
+                        <span>Remaining: <strong id="calories-remaining">929</strong> kcal</span>
+                    </div>
+                </div>
+
+                <!-- Protein Card -->
+                <div class="card macro-card">
+                    <div class="card-header">
+                        <span class="card-title">Protein</span>
+                        <span class="macro-dot protein-dot"></span>
+                    </div>
+                    <div class="macro-values">
+                        <div class="primary-metric" id="protein-consumed">85.9<small>g</small></div>
+                        <div class="secondary-metric">/ <span id="protein-target">135</span>g</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar protein-bar" id="protein-progress-bar" style="width: 63%;"></div>
+                    </div>
+                    <div class="macro-footer">
+                        <span>Remaining: <strong id="protein-remaining">49.1</strong>g</span>
+                    </div>
+                </div>
+
+                <!-- Carbs Card -->
+                <div class="card macro-card">
+                    <div class="card-header">
+                        <span class="card-title">Carbohydrates</span>
+                        <span class="macro-dot carbs-dot"></span>
+                    </div>
+                    <div class="macro-values">
+                        <div class="primary-metric" id="carbs-consumed">103.0<small>g</small></div>
+                        <div class="secondary-metric">/ <span id="carbs-target">180</span>g</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar carbs-bar" id="carbs-progress-bar" style="width: 57%;"></div>
+                    </div>
+                    <div class="macro-footer">
+                        <span>Fiber: <strong id="fiber-consumed">14.0</strong>g / 30g</span>
+                    </div>
+                </div>
+
+                <!-- Fats Card -->
+                <div class="card macro-card">
+                    <div class="card-header">
+                        <span class="card-title">Fats</span>
+                        <span class="macro-dot fat-dot"></span>
+                    </div>
+                    <div class="macro-values">
+                        <div class="primary-metric" id="fat-consumed">18.0<small>g</small></div>
+                        <div class="secondary-metric">/ <span id="fat-target">55</span>g</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar fat-bar" id="fat-progress-bar" style="width: 32%;"></div>
+                    </div>
+                    <div class="macro-footer">
+                        <span>Remaining: <strong>37.0</strong>g</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 1, 2, 3, 4: AI Food Vision & ANN Balance Assessment Scanner -->
+            <section class="card scanner-card" id="scanner-section" style="margin-bottom: 28px;">
+                <div class="scanner-header">
+                    <div>
+                        <h2>📸 AI Food Vision Scanner & Nutritional Evaluator</h2>
+                        <p class="subtitle">CNN (MobileNetV2) Classifier + Nutrition Mapping + ANN Backprop Balance Assessment</p>
+                    </div>
+                    <div class="scanner-presets">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">Try Sample Plates:</span>
+                        <button class="chip" onclick="simulateScan('grilled_salmon')">🐟 Grilled Salmon</button>
+                        <button class="chip" onclick="simulateScan('chicken_rice')">🍗 Chicken & Rice</button>
+                        <button class="chip" onclick="simulateScan('oatmeal_berries')">🥣 Oatmeal Berries</button>
+                        <button class="chip" onclick="simulateScan('avocado_toast')">🥑 Avocado Toast</button>
+                    </div>
+                </div>
+
+                <div class="scanner-body">
+                    <!-- Dropzone -->
+                    <div class="dropzone" id="image-dropzone" onclick="document.getElementById('file-upload').click()">
+                        <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                        <div class="dropzone-content">
+                            <span class="dropzone-icon">📷</span>
+                            <h4>Upload or Snap Food Photo</h4>
+                            <p>Drag & drop meal photo here or browse</p>
+                            <span class="pill-sm">Supports MobileNetV2 / ResNet50 Pipeline</span>
+                        </div>
+                    </div>
+
+                    <!-- Scan Results Panel -->
+                    <div class="scan-results" id="scan-results-panel">
+                        <div class="prediction-header">
+                            <div>
+                                <span class="tag-cnn">CNN Classification</span>
+                                <h3 id="detected-food-title">Grilled Salmon with Asparagus</h3>
+                                <span class="confidence-badge" id="detected-confidence">94.2% Confidence</span>
+                            </div>
+                            <div class="ann-badge-container">
+                                <span class="tag-ann">ANN Assessment</span>
+                                <div class="ann-pill" id="ann-verdict-pill">Adequate-Protein Power</div>
+                            </div>
+                        </div>
+
+                        <!-- Macro breakdown of scanned item -->
+                        <div class="scanned-macros-grid">
+                            <div class="macro-box">
+                                <span class="label">Calories</span>
+                                <strong id="scan-cal">330 kcal</strong>
+                            </div>
+                            <div class="macro-box">
+                                <span class="label">Protein</span>
+                                <strong id="scan-p">41.0g</strong>
+                            </div>
+                            <div class="macro-box">
+                                <span class="label">Carbohydrates</span>
+                                <strong id="scan-c">5.0g</strong>
+                            </div>
+                            <div class="macro-box">
+                                <span class="label">Fats</span>
+                                <strong id="scan-f">17.0g</strong>
+                            </div>
+                        </div>
+
+                        <!-- Serving selector & GenAI summary -->
+                        <div class="scan-serving-row">
+                            <label>Serving Size:
+                                <select id="scan-serving-select" onchange="recalculateServing()">
+                                    <option value="150">Small (150g)</option>
+                                    <option value="200" selected>Standard (200g)</option>
+                                    <option value="300">Large (300g)</option>
+                                </select>
+                            </label>
+                            <button class="btn btn-primary" onclick="logScannedMeal()">+ Add to Meal Diary</button>
+                        </div>
+
+                        <div class="genai-box">
+                            <strong>🤖 GenAI Coach Explanation:</strong>
+                            <p id="scan-coach-explanation">With 41g of high-biological-value protein, this plate optimizes muscle protein synthesis and keeps satiety hormones elevated for hours, fitting right within your Fat Loss deficit.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Split Layout -->
+            <div class="dashboard-split">
+                <!-- Left: Daily Meals & Diary -->
+                <div class="diary-section">
+                    <div class="section-header">
+                        <h2>Daily Meal Diary & History</h2>
+                        <span class="count-badge" id="meals-count-badge">2 meals</span>
+                    </div>
+
+                    <div class="meal-group">
+                        <div class="meal-group-header">
+                            <h3>🌅 Breakfast</h3>
+                            <span class="meal-subtotal" id="breakfast-subtotal">364 kcal</span>
+                        </div>
+                        <div class="meal-items-list" id="breakfast-list"></div>
+                    </div>
+
+                    <div class="meal-group">
+                        <div class="meal-group-header">
+                            <h3>☀️ Lunch</h3>
+                            <span class="meal-subtotal" id="lunch-subtotal">557 kcal</span>
+                        </div>
+                        <div class="meal-items-list" id="lunch-list"></div>
+                    </div>
+
+                    <div class="meal-group">
+                        <div class="meal-group-header">
+                            <h3>🌙 Dinner</h3>
+                            <span class="meal-subtotal" id="dinner-subtotal">0 kcal</span>
+                        </div>
+                        <div class="meal-items-list" id="dinner-list">
+                            <div class="empty-meal-slot" onclick="openModalForCategory('dinner')">+ Tap to log Dinner</div>
+                        </div>
+                    </div>
+
+                    <div class="meal-group">
+                        <div class="meal-group-header">
+                            <h3>🍎 Snacks</h3>
+                            <span class="meal-subtotal" id="snacks-subtotal">0 kcal</span>
+                        </div>
+                        <div class="meal-items-list" id="snacks-list">
+                            <div class="empty-meal-slot" onclick="openModalForCategory('snacks')">+ Tap to log Snacks</div>
+                        </div>
+                    </div>
+
+                    <!-- Hydration Card -->
+                    <div class="card water-card">
+                        <div class="water-header">
+                            <div>
+                                <h3>Hydration Tracker</h3>
+                                <p>Optimal metabolic hydration status</p>
+                            </div>
+                            <div class="water-count">
+                                <span id="water-current">1,600</span> / <span id="water-target">2,500</span> ml
+                            </div>
+                        </div>
+                        <div class="progress-bar-container water-bar-container">
+                            <div class="progress-bar water-bar" id="water-progress-bar" style="width: 64%;"></div>
+                        </div>
+                        <div class="water-actions">
+                            <button class="btn btn-sm btn-outline" onclick="addWater(250)">+250 ml (Cup)</button>
+                            <button class="btn btn-sm btn-outline" onclick="addWater(500)">+500 ml (Bottle)</button>
+                            <button class="btn btn-sm btn-outline" onclick="addWater(750)">+750 ml</button>
+                            <button class="btn btn-sm btn-ghost" onclick="resetWater()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: AI Nutritionist Assistant & Pattern Analysis -->
+                <div class="assistant-section">
+                    <!-- MODULE 5: RNN / LSTM Eating Pattern Widget -->
+                    <div class="card pattern-card" id="pattern-section" style="margin-bottom: 24px;">
+                        <div class="pattern-header">
+                            <div>
+                                <span class="tag-rnn">RNN / LSTM Model</span>
+                                <h3>Eating Pattern & Calorie Forecast</h3>
+                            </div>
+                            <span class="pattern-badge" id="pattern-name-badge">Consistent & Optimal</span>
+                        </div>
+                        <p class="pattern-insight" id="pattern-insight-text">
+                            Analyzing sequential meals: Intake is front-loaded with stable circadian distribution. Next-day expected intake: <strong>1,840 kcal (Equilibrium)</strong>.
+                        </p>
+                        <div class="forecast-meter">
+                            <div class="meter-label">Next-Day Forecast: <strong id="forecast-cal-num">1,840 kcal</strong></div>
+                            <div class="meter-status pill-sm">On-Target Budget</div>
+                        </div>
+                    </div>
+
+                    <!-- MODULE 6: GenAI Nutrition Coach Live Feed -->
+                    <div class="card chat-card">
+                        <div class="chat-header">
+                            <div class="ai-avatar-badge">
+                                <span>🧠</span>
+                                <div>
+                                    <h4>NutriAI GenAI Coach</h4>
+                                    <span class="online-status">● Live Nutrition Guidance</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline" onclick="openWeeklyReportModal()">📑 Weekly Report</button>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-msg ai-msg">
+                                <p>Hello Alex! I've analyzed your breakfast and lunch. You're currently at <strong>85.9g of protein</strong> and <strong>921 calories</strong>.</p>
+                                <p class="recommendation-box">💡 <strong>Coach Recommendation:</strong> You have 49g of protein remaining for dinner. A salmon fillet or tofu stir-fry with quinoa will hit your target while maintaining your 500 kcal deficit.</p>
+                                <span class="msg-timestamp">1:15 PM</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-quick-prompts">
+                            <button class="chip" onclick="sendQuickPrompt('What should I eat for dinner to hit remaining macros?')">Dinner recommendations</button>
+                            <button class="chip" onclick="sendQuickPrompt('Suggest a healthier alternative to french fries')">Healthy swaps</button>
+                            <button class="chip" onclick="sendQuickPrompt('Evaluate my fiber and gut health balance')">Fiber analysis</button>
+                        </div>
+
+                        <form class="chat-input-bar" id="chat-form">
+                            <input type="text" id="chat-input" placeholder="Ask your AI nutritionist anything or ask for food swaps..." required>
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </form>
+                    </div>
+
+                    <!-- Micronutrient Tracker Card -->
+                    <div class="card micro-card">
+                        <h3>Key Micronutrient Breakdown</h3>
+                        <div class="micro-grid">
+                            <div class="micro-item">
+                                <span class="micro-name">Potassium</span>
+                                <span class="micro-val">1,145 / 3,400 mg</span>
+                            </div>
+                            <div class="micro-item">
+                                <span class="micro-name">Calcium</span>
+                                <span class="micro-val">387 / 1,000 mg</span>
+                            </div>
+                            <div class="micro-item">
+                                <span class="micro-name">Iron</span>
+                                <span class="micro-val">8.2 / 18 mg</span>
+                            </div>
+                            <div class="micro-item">
+                                <span class="micro-name">Vitamin C</span>
+                                <span class="micro-val">98.9 / 90 mg (110%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Meal Modal -->
+    <div class="modal-overlay" id="meal-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Log Food Item</h3>
+                <button class="btn-close" id="btn-close-modal">✕</button>
+            </div>
+            <form id="food-log-form">
+                <div class="form-group">
+                    <label>Meal Category</label>
+                    <select id="meal-type-select" required>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner" selected>Dinner</option>
+                        <option value="snacks">Snack / Pre-Workout</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Food Name</label>
+                    <input type="text" id="food-name-input" placeholder="e.g. Pan-seared Salmon Fillet" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Calories (kcal)</label>
+                        <input type="number" id="calories-input" placeholder="e.g. 330" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Protein (g)</label>
+                        <input type="number" step="0.1" id="protein-input" placeholder="e.g. 41" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Carbs (g)</label>
+                        <input type="number" step="0.1" id="carbs-input" placeholder="e.g. 5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fat (g)</label>
+                        <input type="number" step="0.1" id="fat-input" placeholder="e.g. 17" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="btn-cancel-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Weekly Report Modal -->
+    <div class="modal-overlay" id="report-modal" style="display: none;">
+        <div class="modal-card" style="width: 620px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3>📑 GenAI Weekly Performance Report</h3>
+                <button class="btn-close" onclick="closeWeeklyReportModal()">✕</button>
+            </div>
+            <div id="weekly-report-body" style="font-size: 0.9rem; line-height: 1.6; color: #334155;">
+                <!-- Dynamically loaded -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeWeeklyReportModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

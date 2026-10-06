@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ai-nutrition-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_nutrition_assistant
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=8000
+      - ENVIRONMENT=production
+    restart: unless-stopped

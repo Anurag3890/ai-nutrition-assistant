@@ -1,0 +1,189 @@
+{
+  "sources": [
+    "USDA FoodData Central (FDC)",
+    "Open Food Facts Public Database",
+    "WHO Guidelines for Dietary Intake"
+  ],
+  "foods": {
+    "grilled_salmon_with_asparagus": {
+      "display_name": "Grilled Salmon with Asparagus",
+      "default_serving_size": 200,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 165.0,
+        "protein_g": 20.5,
+        "carbs_g": 2.2,
+        "fat_g": 8.5,
+        "fiber_g": 1.4,
+        "sodium_mg": 180.0,
+        "potassium_mg": 460.0,
+        "vitamin_c_mg": 5.6,
+        "vitamin_d_iu": 480.0,
+        "calcium_mg": 28.0,
+        "iron_mg": 1.2
+      }
+    },
+    "grilled_chicken_breast_and_rice": {
+      "display_name": "Grilled Chicken Breast with White Rice",
+      "default_serving_size": 250,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 148.0,
+        "protein_g": 19.5,
+        "carbs_g": 14.2,
+        "fat_g": 1.8,
+        "fiber_g": 0.5,
+        "sodium_mg": 150.0,
+        "potassium_mg": 240.0,
+        "vitamin_c_mg": 0.0,
+        "vitamin_d_iu": 0.0,
+        "calcium_mg": 15.0,
+        "iron_mg": 0.9
+      }
+    },
+    "oatmeal_with_berries_and_whey": {
+      "display_name": "Oatmeal with Mixed Berries & Whey Protein",
+      "default_serving_size": 220,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 135.0,
+        "protein_g": 11.5,
+        "carbs_g": 18.0,
+        "fat_g": 2.1,
+        "fiber_g": 3.2,
+        "sodium_mg": 65.0,
+        "potassium_mg": 190.0,
+        "vitamin_c_mg": 8.5,
+        "vitamin_d_iu": 20.0,
+        "calcium_mg": 95.0,
+        "iron_mg": 1.8
+      }
+    },
+    "avocado_egg_toast": {
+      "display_name": "Avocado & Poached Egg Whole-Grain Toast",
+      "default_serving_size": 180,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 210.0,
+        "protein_g": 9.2,
+        "carbs_g": 18.5,
+        "fat_g": 12.0,
+        "fiber_g": 4.5,
+        "sodium_mg": 290.0,
+        "potassium_mg": 310.0,
+        "vitamin_c_mg": 4.2,
+        "vitamin_d_iu": 45.0,
+        "calcium_mg": 52.0,
+        "iron_mg": 1.9
+      }
+    },
+    "mediterranean_salad_with_feta": {
+      "display_name": "Mediterranean Salad with Olives & Feta",
+      "default_serving_size": 200,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 95.0,
+        "protein_g": 3.8,
+        "carbs_g": 5.4,
+        "fat_g": 7.0,
+        "fiber_g": 2.1,
+        "sodium_mg": 320.0,
+        "potassium_mg": 220.0,
+        "vitamin_c_mg": 22.0,
+        "vitamin_d_iu": 8.0,
+        "calcium_mg": 85.0,
+        "iron_mg": 1.1
+      }
+    },
+    "greek_yogurt_berry_bowl": {
+      "display_name": "Greek Yogurt Bowl with Berries & Honey",
+      "default_serving_size": 200,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 92.0,
+        "protein_g": 9.0,
+        "carbs_g": 11.5,
+        "fat_g": 1.2,
+        "fiber_g": 1.8,
+        "sodium_mg": 45.0,
+        "potassium_mg": 160.0,
+        "vitamin_c_mg": 6.0,
+        "vitamin_d_iu": 10.0,
+        "calcium_mg": 120.0,
+        "iron_mg": 0.4
+      }
+    },
+    "lean_steak_with_broccoli": {
+      "display_name": "Lean Beef Steak with Steamed Broccoli",
+      "default_serving_size": 250,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 175.0,
+        "protein_g": 24.0,
+        "carbs_g": 2.8,
+        "fat_g": 7.5,
+        "fiber_g": 1.6,
+        "sodium_mg": 160.0,
+        "potassium_mg": 410.0,
+        "vitamin_c_mg": 35.0,
+        "vitamin_d_iu": 7.0,
+        "calcium_mg": 32.0,
+        "iron_mg": 2.8
+      }
+    },
+    "whole_grain_pasta_pomodoro": {
+      "display_name": "Whole Grain Pasta with Fresh Tomato Pomodoro",
+      "default_serving_size": 250,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 140.0,
+        "protein_g": 5.2,
+        "carbs_g": 26.5,
+        "fat_g": 1.8,
+        "fiber_g": 3.8,
+        "sodium_mg": 210.0,
+        "potassium_mg": 280.0,
+        "vitamin_c_mg": 12.0,
+        "vitamin_d_iu": 0.0,
+        "calcium_mg": 22.0,
+        "iron_mg": 1.4
+      }
+    },
+    "whey_protein_isolate_shake": {
+      "display_name": "Whey Protein Isolate Shake (Water Mixed)",
+      "default_serving_size": 330,
+      "serving_unit": "ml",
+      "per_100g": {
+        "calories": 42.0,
+        "protein_g": 8.5,
+        "carbs_g": 0.6,
+        "fat_g": 0.3,
+        "fiber_g": 0.0,
+        "sodium_mg": 40.0,
+        "potassium_mg": 60.0,
+        "vitamin_c_mg": 0.0,
+        "vitamin_d_iu": 0.0,
+        "calcium_mg": 50.0,
+        "iron_mg": 0.2
+      }
+    },
+    "quinoa_black_bean_buddha_bowl": {
+      "display_name": "Quinoa & Black Bean Buddha Bowl",
+      "default_serving_size": 250,
+      "serving_unit": "g",
+      "per_100g": {
+        "calories": 138.0,
+        "protein_g": 5.8,
+        "carbs_g": 24.0,
+        "fat_g": 2.5,
+        "fiber_g": 5.2,
+        "sodium_mg": 180.0,
+        "potassium_mg": 340.0,
+        "vitamin_c_mg": 14.0,
+        "vitamin_d_iu": 0.0,
+        "calcium_mg": 40.0,
+        "iron_mg": 2.2
+      }
+    }
+  }
+}

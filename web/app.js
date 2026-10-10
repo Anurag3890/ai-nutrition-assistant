@@ -1,55 +1,90 @@
 // ==============================================================================
-// NUTRIAI APP CORE - MULTI-USER STATE & OMNI-AI ORACLE ENGINE
+// NUTRIAI APP CORE - USER-SPECIFIC AUTHENTICATION & ZERO-PREPOPULATION ENGINE
 // ==============================================================================
 
-const DB_USERS = {
-    "user_demo_01": {
-        id: "user_demo_01",
+const DEFAULT_ACCOUNTS = {
+    "user_alex": {
+        id: "user_alex",
         name: "Alex Morgan",
+        phone: "+1 555-0199",
+        password: "Password123!",
         avatar: "AM",
-        goal: "Fat Loss Deficit",
-        diet: "Omnivore Balanced",
-        targets: { calories: 1850, protein: 135, carbs: 180, fat: 55, water: 2500 },
-        waterMl: 1600,
-        meals: [
-            { id: "m_alex_1", category: "breakfast", name: "Oatmeal with Blueberries & Vanilla Whey", calories: 364, protein: 32.2, carbs: 49.5, fat: 4.5 },
-            { id: "m_alex_2", category: "lunch", name: "Grilled Chicken, Jasmine Rice & Broccoli with Avocado", calories: 557, protein: 53.7, carbs: 53.5, fat: 13.5 }
-        ],
-        streakDays: 14
+        goal: "Fat Loss & Deficit",
+        diet: "Omnivore Caloric Deficit",
+        targets: { calories: 1850, protein: 135, carbs: 180, fat: 55, water: 2500 }
     },
-    "user_sarah_keto": {
-        id: "user_sarah_keto",
+    "user_sarah": {
+        id: "user_sarah",
         name: "Sarah Chen",
+        phone: "+1 555-0288",
+        password: "KetoSecret123!",
         avatar: "SC",
-        goal: "Metabolic Health & Ketosis",
+        goal: "Metabolic Ketosis",
         diet: "Strict Ketogenic (<35g Net Carbs)",
-        targets: { calories: 2100, protein: 140, carbs: 35, fat: 155, water: 3000 },
-        waterMl: 2200,
-        meals: [
-            { id: "m_sarah_1", category: "breakfast", name: "Avocado & 3 Poached Pasture-Raised Eggs in Olive Oil", calories: 480, protein: 24.0, carbs: 5.0, fat: 40.0 },
-            { id: "m_sarah_2", category: "lunch", name: "Wild Salmon Fillet with Asparagus & Garlic Herb Butter", calories: 620, protein: 45.0, carbs: 4.0, fat: 46.0 }
-        ],
-        streakDays: 28
+        targets: { calories: 2100, protein: 140, carbs: 35, fat: 155, water: 3000 }
     },
-    "user_marcus_athlete": {
-        id: "user_marcus_athlete",
+    "user_marcus": {
+        id: "user_marcus",
         name: "Marcus Vance",
+        phone: "+1 555-0377",
+        password: "AthletePower123!",
         avatar: "MV",
-        goal: "Muscle Hypertrophy & Athletic Endurance",
-        diet: "High-Carb Performance",
-        targets: { calories: 3100, protein: 195, carbs: 410, fat: 75, water: 3800 },
-        waterMl: 2600,
-        meals: [
-            { id: "m_marcus_1", category: "breakfast", name: "Monster Protein Oats with Banana, Honey & Peanut Butter", calories: 850, protein: 55.0, carbs: 115.0, fat: 22.0 },
-            { id: "m_marcus_2", category: "lunch", name: "Double Chicken Breast Rice Bowl with Roasted Sweet Potato", calories: 920, protein: 68.0, carbs: 125.0, fat: 16.0 }
-        ],
-        streakDays: 42
+        goal: "Muscle Hypertrophy & Bulk",
+        diet: "High-Carb Athletic Fuel",
+        targets: { calories: 3100, protein: 195, carbs: 410, fat: 75, water: 3800 }
     }
 };
 
-let currentUserId = "user_demo_01";
+// --- Storage Helpers (Accounts, Meals, Water) ---
+function loadAccounts() {
+    try {
+        const saved = localStorage.getItem("nutriai_accounts_v3");
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Object.keys(parsed).length > 0) return parsed;
+        }
+    } catch (e) {}
+    localStorage.setItem("nutriai_accounts_v3", JSON.stringify(DEFAULT_ACCOUNTS));
+    return { ...DEFAULT_ACCOUNTS };
+}
 
-// Current Active Scanned Item Buffer
+function saveAccounts(accs) {
+    localStorage.setItem("nutriai_accounts_v3", JSON.stringify(accs));
+}
+
+// STRICT ZERO-PREPOPULATION: default meals is ALWAYS []
+function getUserMeals(userId) {
+    if (!userId) return [];
+    try {
+        const raw = localStorage.getItem("nutriai_meals_" + userId);
+        if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return [];
+}
+
+function saveUserMeals(userId, meals) {
+    if (!userId) return;
+    localStorage.setItem("nutriai_meals_" + userId, JSON.stringify(meals));
+}
+
+// STRICT ZERO-PREPOPULATION: default water is ALWAYS 0
+function getUserWater(userId) {
+    if (!userId) return 0;
+    try {
+        const raw = localStorage.getItem("nutriai_water_" + userId);
+        if (raw !== null) return parseInt(raw, 10) || 0;
+    } catch (e) {}
+    return 0;
+}
+
+function saveUserWater(userId, ml) {
+    if (!userId) return;
+    localStorage.setItem("nutriai_water_" + userId, ml.toString());
+}
+
+let currentUserId = localStorage.getItem("nutriai_active_user_id") || "user_alex";
+
+// Active Scanned Item Buffer
 let activeScanItem = {
     name: "Grilled Salmon with Asparagus",
     c100: 165, p100: 20.5, cb100: 2.2, f100: 8.5,
@@ -61,7 +96,11 @@ let activeScanItem = {
 
 // --- Lifecycle Initialization ---
 document.addEventListener("DOMContentLoaded", () => {
-    renderUserSwitcherList();
+    const accounts = loadAccounts();
+    if (!currentUserId || !accounts[currentUserId]) {
+        currentUserId = "user_alex";
+        localStorage.setItem("nutriai_active_user_id", currentUserId);
+    }
     renderCurrentUserData();
 });
 
@@ -70,11 +109,9 @@ function switchMainTab(tabKey) {
     document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
     document.querySelectorAll(".main-view-section").forEach(sec => sec.classList.remove("active-view"));
 
-    // Activate target
     const targetSection = document.getElementById(`section-${tabKey}`);
     if (targetSection) targetSection.classList.add("active-view");
 
-    // Headings update
     const headingMap = {
         dashboard: "Nutritional Intelligence Dashboard",
         oracle: "Omni-AI Health & Nutrition Oracle",
@@ -85,7 +122,6 @@ function switchMainTab(tabKey) {
         document.getElementById("page-main-heading").textContent = headingMap[tabKey];
     }
 
-    // Set active sidebar item
     const tabIndexMap = { dashboard: 0, oracle: 1, scanner: 2, patterns: 3 };
     const navItems = document.querySelectorAll(".nav-item");
     if (navItems[tabIndexMap[tabKey]]) {
@@ -93,51 +129,48 @@ function switchMainTab(tabKey) {
     }
 }
 
-// --- User Profile & Switcher Functions ---
+// --- Active User Getter ---
 function getActiveUser() {
-    return DB_USERS[currentUserId];
+    const accounts = loadAccounts();
+    return accounts[currentUserId] || null;
 }
 
-function switchUser(userId) {
-    if (!DB_USERS[userId]) return;
-    currentUserId = userId;
-    renderUserSwitcherList();
-    renderCurrentUserData();
-    closeAuthModal();
-}
-
-function renderUserSwitcherList() {
-    const container = document.getElementById("users-switch-container");
-    if (!container) return;
-
-    container.innerHTML = Object.values(DB_USERS).map(u => `
-        <div class="user-switch-item ${u.id === currentUserId ? 'active-user-item' : ''}" onclick="switchUser('${u.id}')">
-            <div class="avatar-sphere">${u.avatar}</div>
-            <div class="user-item-meta" style="flex-grow: 1;">
-                <div class="u-name">${u.name} ${u.id === currentUserId ? '✓ Active' : ''}</div>
-                <div class="u-desc">${u.goal} • Target: ${u.targets.calories.toLocaleString()} kcal</div>
-            </div>
-            <div style="font-size: 0.75rem; color: #10b981; font-weight: 800;">🔥 ${u.streakDays}d streak</div>
-        </div>
-    `).join("");
-}
-
+// --- UI Render Function ---
 function renderCurrentUserData() {
     const user = getActiveUser();
-    if (!user) return;
+    if (!user) {
+        openAuthModal();
+        return;
+    }
 
-    // Header & Sidebar
-    document.getElementById("side-avatar").textContent = user.avatar;
-    document.getElementById("side-username").textContent = user.name;
-    document.getElementById("side-usergoal").textContent = `● ${user.goal} (${user.targets.calories} kcal)`;
-    document.getElementById("active-user-subhead").textContent = `Active Athlete: ${user.name} • Caloric Target: ${user.targets.calories.toLocaleString()} kcal • ${user.diet}`;
+    // Update Sidebar
+    const sideAvatar = document.getElementById("side-avatar");
+    if (sideAvatar) sideAvatar.textContent = user.avatar;
+    const sideUsername = document.getElementById("side-username");
+    if (sideUsername) sideUsername.textContent = user.name;
+    const sideGoal = document.getElementById("side-usergoal");
+    if (sideGoal) sideGoal.textContent = `● ${user.goal} (${user.targets.calories} kcal)`;
 
-    // Calculate totals
-    const totals = user.meals.reduce((acc, m) => {
-        acc.calories += m.calories;
-        acc.protein += m.protein;
-        acc.carbs += m.carbs;
-        acc.fat += m.fat;
+    // Update Top Header
+    const topAvatar = document.getElementById("top-avatar");
+    if (topAvatar) topAvatar.textContent = user.avatar;
+    const topUsername = document.getElementById("top-username");
+    if (topUsername) topUsername.textContent = user.name;
+    const topPhone = document.getElementById("top-phone");
+    if (topPhone) topPhone.textContent = `📱 ${user.phone || 'Personal'}`;
+    const subhead = document.getElementById("active-user-subhead");
+    if (subhead) subhead.textContent = `Active: ${user.name} • 📱 ${user.phone} • Caloric Target: ${user.targets.calories.toLocaleString()} kcal • ${user.goal}`;
+
+    // Get User's Isolated Real-Time Meals & Water
+    const meals = getUserMeals(user.id);
+    const waterMl = getUserWater(user.id);
+
+    // Calculate totals purely from user-entered meals
+    const totals = meals.reduce((acc, m) => {
+        acc.calories += (Number(m.calories) || 0);
+        acc.protein += (Number(m.protein) || 0);
+        acc.carbs += (Number(m.carbs) || 0);
+        acc.fat += (Number(m.fat) || 0);
         return acc;
     }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
 
@@ -150,7 +183,7 @@ function renderCurrentUserData() {
     document.getElementById("dash-cal-rem").textContent = `${Math.round(calRem)} kcal`;
     const calPct = Math.min(100, Math.round((totals.calories / tg.calories) * 100));
     document.getElementById("dash-cal-fill").style.width = calPct + "%";
-    document.getElementById("dash-cal-status").textContent = totals.calories <= tg.calories ? "In Deficit / Target" : "Over Budget";
+    document.getElementById("dash-cal-status").textContent = totals.calories === 0 ? "Ready to Track" : (totals.calories <= tg.calories ? "In Deficit / Target" : "Over Budget");
 
     // Protein Card
     document.getElementById("dash-p-consumed").innerHTML = `${totals.protein.toFixed(1)}<small>g</small>`;
@@ -162,6 +195,7 @@ function renderCurrentUserData() {
     // Carbs Card
     document.getElementById("dash-c-consumed").innerHTML = `${totals.carbs.toFixed(1)}<small>g</small>`;
     document.getElementById("dash-c-target").textContent = tg.carbs;
+    document.getElementById("dash-c-rem").textContent = `${Math.max(0, (tg.carbs - totals.carbs).toFixed(1))}g`;
     const cPct = Math.min(100, Math.round((totals.carbs / tg.carbs) * 100));
     document.getElementById("dash-c-fill").style.width = cPct + "%";
 
@@ -172,35 +206,38 @@ function renderCurrentUserData() {
     const fPct = Math.min(100, Math.round((totals.fat / tg.fat) * 100));
     document.getElementById("dash-f-fill").style.width = fPct + "%";
 
-    // Hydration
-    document.getElementById("dash-water-num").textContent = user.waterMl.toLocaleString();
+    // Hydration Card
+    document.getElementById("dash-water-num").textContent = waterMl.toLocaleString();
     document.getElementById("dash-water-target").textContent = tg.water.toLocaleString();
-    const wPct = Math.min(100, Math.round((user.waterMl / tg.water) * 100));
+    const wPct = Math.min(100, Math.round((waterMl / tg.water) * 100));
     document.getElementById("dash-water-fill").style.width = wPct + "%";
 
-    // Render Meals by Category
-    renderMealSlot("breakfast");
-    renderMealSlot("lunch");
-    renderMealSlot("dinner");
-    renderMealSlot("snacks");
+    // Render Clean Slots
+    renderMealSlot("breakfast", meals);
+    renderMealSlot("lunch", meals);
+    renderMealSlot("dinner", meals);
+    renderMealSlot("snacks", meals);
 
-    document.getElementById("diary-meals-count").textContent = `${user.meals.length} meals tracked`;
+    document.getElementById("diary-meals-count").textContent = `${meals.length} meals tracked`;
 
-    // Update Live summary
+    // AI Coach Real-Time Insight (Personalized to Name & Data)
     const summaryEl = document.getElementById("coach-live-summary");
     if (summaryEl) {
-        summaryEl.innerHTML = `<strong>${user.name}</strong>, you have secured <strong>${totals.protein.toFixed(1)}g of protein</strong> today. You have <strong>${Math.max(0, (tg.protein - totals.protein).toFixed(1))}g remaining</strong>. ${calRem > 0 ? `Your remaining caloric runway is <strong>${Math.round(calRem)} kcal</strong>.` : 'You have reached today\'s target budget.'}`;
+        if (meals.length === 0) {
+            summaryEl.innerHTML = `Welcome, <strong>${user.name}</strong>! Your account (📱 ${user.phone}) has a completely clean slate today (<strong>0 kcal</strong> consumed). Your daily target is <strong>${tg.calories.toLocaleString()} kcal</strong> and <strong>${tg.protein}g protein</strong>. Tap any meal slot below or '+ Log Food' whenever you eat to start logging.`;
+        } else {
+            summaryEl.innerHTML = `<strong>${user.name}</strong>, you have logged <strong>${Math.round(totals.calories)} kcal</strong> and <strong>${totals.protein.toFixed(1)}g of protein</strong> today. You have <strong>${Math.max(0, (tg.protein - totals.protein).toFixed(1))}g protein</strong> and <strong>${Math.round(calRem)} kcal</strong> remaining in your daily budget.`;
+        }
     }
 }
 
-function renderMealSlot(slot) {
+function renderMealSlot(slot, meals) {
     const listEl = document.getElementById(`list-${slot}`);
     const subtotalEl = document.getElementById(`subtotal-${slot}`);
     if (!listEl) return;
 
-    const user = getActiveUser();
-    const items = user.meals.filter(m => m.category === slot);
-    const subtotal = items.reduce((s, i) => s + i.calories, 0);
+    const items = meals.filter(m => m.category === slot);
+    const subtotal = items.reduce((s, i) => s + (Number(i.calories) || 0), 0);
 
     if (subtotalEl) subtotalEl.textContent = `${Math.round(subtotal)} kcal`;
 
@@ -222,58 +259,252 @@ function renderMealSlot(slot) {
 
 function deleteUserMeal(mealId) {
     const user = getActiveUser();
-    user.meals = user.meals.filter(m => m.id !== mealId);
+    if (!user) return;
+    const meals = getUserMeals(user.id).filter(m => m.id !== mealId);
+    saveUserMeals(user.id, meals);
     renderCurrentUserData();
 }
 
-function handleRegisterNewUser(e) {
-    e.preventDefault();
-    const name = document.getElementById("reg-name").value.trim();
-    const cal = parseFloat(document.getElementById("reg-cal").value) || 2000;
-    const prot = parseFloat(document.getElementById("reg-prot").value) || 140;
-    const goalVal = document.getElementById("reg-goal").value;
-
-    const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "NN";
-    const newId = "user_" + Date.now();
-
-    DB_USERS[newId] = {
-        id: newId,
-        name: name,
-        avatar: initials,
-        goal: goalVal.replace("_", " ").toUpperCase(),
-        diet: "Personalized Protocol",
-        targets: { calories: cal, protein: prot, carbs: Math.round((cal * 0.45) / 4), fat: Math.round((cal * 0.25) / 9), water: 2800 },
-        waterMl: 0,
-        meals: [],
-        streakDays: 1
-    };
-
-    switchUser(newId);
-    closeAuthModal();
-    alert(`Welcome, ${name}! Your custom profile is now active.`);
-}
-
-// --- Hydration ---
+// --- Hydration Actions ---
 function addWater(amount) {
     const user = getActiveUser();
-    user.waterMl += amount;
+    if (!user) return;
+    const cur = getUserWater(user.id);
+    saveUserWater(user.id, cur + amount);
     renderCurrentUserData();
 }
 
 function resetWater() {
     const user = getActiveUser();
-    user.waterMl = 0;
+    if (!user) return;
+    saveUserWater(user.id, 0);
     renderCurrentUserData();
+}
+
+// --- Authentication Gateway Handlers ---
+function switchAuthTab(tab) {
+    const signinBtn = document.getElementById("tab-btn-signin");
+    const regBtn = document.getElementById("tab-btn-register");
+    const signinPane = document.getElementById("pane-signin");
+    const regPane = document.getElementById("pane-register");
+
+    if (tab === 'signin') {
+        signinBtn.classList.add("active");
+        regBtn.classList.remove("active");
+        signinPane.style.display = "block";
+        regPane.style.display = "none";
+    } else {
+        regBtn.classList.add("active");
+        signinBtn.classList.remove("active");
+        regPane.style.display = "block";
+        signinPane.style.display = "none";
+    }
+    showAuthAlert("", "hide");
+}
+
+function showAuthAlert(msg, type) {
+    const el = document.getElementById("auth-alert");
+    if (!el) return;
+    if (type === "hide" || !msg) {
+        el.style.display = "none";
+        el.className = "auth-feedback-alert";
+        el.textContent = "";
+        return;
+    }
+    el.textContent = msg;
+    el.className = `auth-feedback-alert ${type}`;
+    el.style.display = "block";
+}
+
+function fillDemoCredentials(key) {
+    switchAuthTab('signin');
+    if (key === 'alex') {
+        document.getElementById("login-phone").value = "+1 555-0199";
+        document.getElementById("login-password").value = "Password123!";
+    } else if (key === 'sarah') {
+        document.getElementById("login-phone").value = "+1 555-0288";
+        document.getElementById("login-password").value = "KetoSecret123!";
+    } else if (key === 'marcus') {
+        document.getElementById("login-phone").value = "+1 555-0377";
+        document.getElementById("login-password").value = "AthletePower123!";
+    }
+    showAuthAlert("Demo credentials populated. Click 'Sign In' to proceed.", "success");
+}
+
+function handleLoginSubmit(e) {
+    e.preventDefault();
+    const phoneInput = document.getElementById("login-phone").value.trim();
+    const passInput = document.getElementById("login-password").value.trim();
+    const accounts = loadAccounts();
+
+    const cleanInput = phoneInput.replace(/[\s\-\(\)]/g, "");
+
+    const foundUser = Object.values(accounts).find(u => {
+        const uCleanPhone = (u.phone || "").replace(/[\s\-\(\)]/g, "");
+        const matchPhone = (uCleanPhone === cleanInput || u.phone === phoneInput || u.name.toLowerCase() === phoneInput.toLowerCase());
+        const matchPass = (u.password === passInput);
+        return matchPhone && matchPass;
+    });
+
+    if (foundUser) {
+        currentUserId = foundUser.id;
+        localStorage.setItem("nutriai_active_user_id", currentUserId);
+        closeAuthModal();
+        renderCurrentUserData();
+        showAuthAlert("", "hide");
+    } else {
+        showAuthAlert("Invalid phone number or password. Check credentials or click a test athlete profile below.", "error");
+    }
+}
+
+function autoCalculateMacroTargets() {
+    const goal = document.getElementById("reg-goal").value;
+    const calEl = document.getElementById("reg-cal");
+    const protEl = document.getElementById("reg-prot");
+    if (goal === "fat_loss") {
+        calEl.value = 1850;
+        protEl.value = 145;
+    } else if (goal === "muscle_gain") {
+        calEl.value = 2800;
+        protEl.value = 180;
+    } else if (goal === "metabolic_health") {
+        calEl.value = 2100;
+        protEl.value = 140;
+    } else if (goal === "athletic_performance") {
+        calEl.value = 3100;
+        protEl.value = 190;
+    } else {
+        calEl.value = 2000;
+        protEl.value = 140;
+    }
+}
+
+function handleRegisterSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById("reg-name").value.trim();
+    const phone = document.getElementById("reg-phone").value.trim();
+    const password = document.getElementById("reg-password").value.trim();
+    const goalVal = document.getElementById("reg-goal").value;
+    const cal = parseFloat(document.getElementById("reg-cal").value) || 2000;
+    const prot = parseFloat(document.getElementById("reg-prot").value) || 140;
+
+    if (!name || !phone || !password) {
+        showAuthAlert("Please fill in Name, Phone Number, and Password.", "error");
+        return;
+    }
+
+    const accounts = loadAccounts();
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+    const existing = Object.values(accounts).find(u => (u.phone || "").replace(/[\s\-\(\)]/g, "") === cleanPhone);
+    if (existing) {
+        showAuthAlert(`An account with phone number ${phone} already exists. Please Sign In.`, "error");
+        switchAuthTab('signin');
+        document.getElementById("login-phone").value = phone;
+        return;
+    }
+
+    const initials = name.split(" ").map(w => w[0]).filter(Boolean).join("").toUpperCase().slice(0, 2) || "AA";
+    const newId = "user_" + Date.now();
+
+    const goalTitles = {
+        fat_loss: "Fat Loss & Deficit",
+        muscle_gain: "Muscle Hypertrophy & Bulk",
+        metabolic_health: "Metabolic Ketosis",
+        athletic_performance: "Athletic Endurance",
+        maintenance: "Balanced Maintenance"
+    };
+
+    const newUser = {
+        id: newId,
+        name: name,
+        phone: phone,
+        password: password,
+        avatar: initials,
+        goal: goalTitles[goalVal] || "Personal Protocol",
+        diet: "Personalized Protocol",
+        targets: {
+            calories: cal,
+            protein: prot,
+            carbs: Math.round((cal * 0.45) / 4),
+            fat: Math.round((cal * 0.25) / 9),
+            water: 2800
+        }
+    };
+
+    accounts[newId] = newUser;
+    saveAccounts(accounts);
+
+    // Explicitly guarantee 0-state starting ledger
+    saveUserMeals(newId, []);
+    saveUserWater(newId, 0);
+
+    currentUserId = newId;
+    localStorage.setItem("nutriai_active_user_id", currentUserId);
+
+    closeAuthModal();
+    renderCurrentUserData();
+    alert(`Welcome, ${name}! Your profile is ready. You have 0 kcal consumed — log your first meal to start.`);
+}
+
+function signOutUser() {
+    closeProfileModal();
+    currentUserId = null;
+    localStorage.removeItem("nutriai_active_user_id");
+    openAuthModal();
+    const cancelBtn = document.getElementById("btn-cancel-auth");
+    if (cancelBtn) cancelBtn.style.display = "none";
 }
 
 // --- Modals Management ---
 function openAuthModal() {
-    renderUserSwitcherList();
-    document.getElementById("auth-modal").style.display = "flex";
+    const modal = document.getElementById("auth-modal");
+    if (modal) modal.style.display = "flex";
+    const cancelBtn = document.getElementById("btn-cancel-auth");
+    if (cancelBtn) {
+        cancelBtn.style.display = currentUserId ? "inline-block" : "none";
+    }
 }
 
 function closeAuthModal() {
-    document.getElementById("auth-modal").style.display = "none";
+    const modal = document.getElementById("auth-modal");
+    if (modal) modal.style.display = "none";
+}
+
+function openProfileModal() {
+    const user = getActiveUser();
+    if (!user) {
+        openAuthModal();
+        return;
+    }
+    const container = document.getElementById("profile-card-content");
+    container.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; background: var(--bg-surface); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div class="avatar-sphere" style="width: 52px; height: 52px; font-size: 1.2rem;">${user.avatar}</div>
+            <div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: #ffffff;">${user.name}</div>
+                <div style="font-size: 0.85rem; color: var(--accent-sapphire); font-family: var(--font-mono); margin-top: 2px;">📱 ${user.phone || 'Personal'}</div>
+                <div style="font-size: 0.78rem; color: var(--accent-emerald); font-weight: 700; margin-top: 2px;">● ${user.goal}</div>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Daily Energy Target</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--accent-amber); font-family: var(--font-mono);">${user.targets.calories} kcal</div>
+            </div>
+            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Daily Protein Target</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--accent-sapphire); font-family: var(--font-mono);">${user.targets.protein}g</div>
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; background: rgba(16, 185, 129, 0.06); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.2);">
+            🔒 <strong>Strict User Isolation:</strong> All tracked meals and hydration belong solely to this account.
+        </div>
+    `;
+    document.getElementById("profile-modal").style.display = "flex";
+}
+
+function closeProfileModal() {
+    document.getElementById("profile-modal").style.display = "none";
 }
 
 function openLogModal() {
@@ -292,6 +523,8 @@ function closeLogModal() {
 function handleSaveFoodLog(e) {
     e.preventDefault();
     const user = getActiveUser();
+    if (!user) return;
+
     const category = document.getElementById("log-meal-category").value;
     const name = document.getElementById("log-food-name").value;
     const calories = parseFloat(document.getElementById("log-cal").value) || 0;
@@ -299,7 +532,8 @@ function handleSaveFoodLog(e) {
     const carbs = parseFloat(document.getElementById("log-carbs").value) || 0;
     const fat = parseFloat(document.getElementById("log-fat").value) || 0;
 
-    user.meals.push({
+    const meals = getUserMeals(user.id);
+    meals.push({
         id: "m_" + Date.now(),
         category,
         name,
@@ -309,8 +543,16 @@ function handleSaveFoodLog(e) {
         fat
     });
 
+    saveUserMeals(user.id, meals);
     closeLogModal();
     renderCurrentUserData();
+
+    // Reset inputs
+    document.getElementById("log-food-name").value = "";
+    document.getElementById("log-cal").value = "";
+    document.getElementById("log-prot").value = "";
+    document.getElementById("log-carbs").value = "";
+    document.getElementById("log-fat").value = "";
 }
 
 // ==============================================================================
@@ -406,7 +648,6 @@ function submitOracleQuery(e) {
 function askPresetOracle(query) {
     document.getElementById("oracle-input").value = query;
     executeOracleSearch(query);
-    // Smooth scroll to answer
     document.getElementById("oracle-result-box").scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -422,14 +663,13 @@ function executeOracleSearch(query) {
     }
 
     if (!match) {
-        // Universal intelligent answer synthesis
         match = {
             topic: `Clinical Analysis: ${capitalize(query)}`,
             category: "🔬 General Physiology & Nutrition",
             summary: `Regarding '${query}': Biological homeostasis depends upon balancing caloric supply with energetic expenditure, optimizing micronutrient saturation, and respecting circadian endocrine rhythms.`,
             mechanism: `Endocrine axes (insulin, glucagon, cortisol, leptin, ghrelin) continually integrate peripheral nutritional cues from the gut to govern systemic fuel partitioning between storage and ATP expenditure.`,
             protocol: [
-                "Prioritize single-ingredient, unprocessed nutrient sources with high satiety index values.",
+                "Prioritize single-ingredient, whole foods with high satiety index values.",
                 "Ensure steady daily hydration: 35-40 ml per kilogram of body weight.",
                 "Distribute protein intake evenly across meals to sustain circulating plasma amino acid pools."
             ],
@@ -437,7 +677,6 @@ function executeOracleSearch(query) {
         };
     }
 
-    // Render Answer Card
     document.getElementById("oracle-ans-cat").textContent = match.category;
     document.getElementById("oracle-ans-topic").textContent = match.topic;
     document.getElementById("oracle-ans-summary").textContent = match.summary;
@@ -479,7 +718,6 @@ function simulateLensCamera() {
         }
     ];
 
-    // Pick random or alternate
     const chosen = plates[Math.floor(Math.random() * plates.length)];
     activeScanItem = { ...chosen, servingG: 200 };
 
@@ -510,9 +748,11 @@ function adjustScanPortion() {
 
 function logScannedToDiary() {
     const user = getActiveUser();
+    if (!user) return;
     const mult = activeScanItem.servingG / 100.0;
 
-    user.meals.push({
+    const meals = getUserMeals(user.id);
+    meals.push({
         id: "m_scan_" + Date.now(),
         category: "dinner",
         name: `${activeScanItem.name} (${activeScanItem.servingG}g)`,
@@ -522,6 +762,7 @@ function logScannedToDiary() {
         fat: parseFloat((activeScanItem.f100 * mult).toFixed(1))
     });
 
+    saveUserMeals(user.id, meals);
     renderCurrentUserData();
     switchMainTab("dashboard");
     alert(`Logged ${activeScanItem.name} to Dinner for ${user.name}!`);
@@ -532,6 +773,7 @@ function logScannedToDiary() {
 // ==============================================================================
 function openWeeklyAuditModal() {
     const user = getActiveUser();
+    if (!user) return;
     const modal = document.getElementById("audit-modal");
     const container = document.getElementById("audit-report-content");
 
@@ -540,16 +782,16 @@ function openWeeklyAuditModal() {
             <strong>Athlete:</strong> ${user.name} | <strong>Protocol:</strong> ${user.goal} | <strong>Compliance Score:</strong> 96.4%
         </div>
         <h4 style="color: #ffffff; margin-bottom: 6px;">1. Caloric Energy Balance & Deficit Stability</h4>
-        <p>• Multi-day average: <strong>${user.targets.calories - 30} kcal/day</strong> (Target: ${user.targets.calories} kcal). Negative energy balance maintained without acute metabolic down-regulation or thyroid deceleration.</p>
+        <p>• Daily Target: <strong>${user.targets.calories} kcal</strong>. Energy balance calibrated to your specific metabolic rate.</p>
         
         <h4 style="color: #ffffff; margin: 14px 0 6px;">2. Macronutrient Optimization & Muscle Sparing</h4>
-        <p>• Protein average: <strong>${(user.targets.protein + 2).toFixed(1)}g/day</strong> (Target: ${user.targets.protein}g). Fractional synthetic rate (FSR) remains high, shielding myofibrillar mass.</p>
+        <p>• Protein Allocation: <strong>${user.targets.protein}g/day</strong>. Ensures adequate fractional synthetic rate (FSR) to preserve lean tissue.</p>
         
         <h4 style="color: #ffffff; margin: 14px 0 6px;">3. Circadian Feeding Rhythm (RNN Sequence Engine)</h4>
-        <p>• Model classification: <strong>Optimal Circadian Cadence</strong>. Feeding window strictly contained within 9.5 hours, optimizing insulin sensitivity and nocturnal growth hormone secretion.</p>
+        <p>• Model classification: <strong>Optimal Circadian Cadence</strong>. Stable feeding intervals optimize insulin sensitivity and nocturnal recovery.</p>
         
         <h4 style="color: #ffffff; margin: 14px 0 6px;">4. Cellular Hydration & Electrolytes</h4>
-        <p>• Mean fluid intake: <strong>${user.targets.water} ml/day</strong>. Osmotic cellular balance confirmed.</p>
+        <p>• Target fluid intake: <strong>${user.targets.water} ml/day</strong>. Electrolyte-osmotic balance confirmed.</p>
     `;
 
     modal.style.display = "flex";

@@ -39,14 +39,14 @@
                 </nav>
             </div>
 
-            <!-- Active User Profile Switcher Card -->
-            <div class="user-badge-sidebar" onclick="openAuthModal()" title="Click to switch or manage user accounts">
-                <div class="avatar-sphere" id="side-avatar">AM</div>
+            <!-- Active User Profile Card -->
+            <div class="user-badge-sidebar" onclick="openProfileModal()" title="Click to view and edit your profile">
+                <div class="avatar-sphere" id="side-avatar">--</div>
                 <div class="user-info-side">
-                    <div class="uname" id="side-username">Alex Morgan</div>
-                    <div class="ugoal" id="side-usergoal">● Fat Loss (1,850 kcal)</div>
+                    <div class="uname" id="side-username">Select Athlete</div>
+                    <div class="ugoal" id="side-usergoal">● Not Signed In</div>
                 </div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">⇄</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">⚙️</span>
             </div>
         </aside>
 
@@ -58,10 +58,19 @@
                     <h1 id="page-main-heading">Nutritional Intelligence Dashboard</h1>
                     <p class="subtitle">
                         <span class="status-indicator"></span>
-                        <span id="active-user-subhead">Active Athlete: Alex Morgan • Caloric Target: 1,850 kcal</span>
+                        <span id="active-user-subhead">Personal Nutrition Ledger</span>
                     </p>
                 </div>
                 <div class="header-actions">
+                    <!-- Personalized user pill -->
+                    <div class="user-header-pill" onclick="openProfileModal()" style="cursor: pointer;" title="View your account details">
+                        <div class="header-user-avatar" id="top-avatar">--</div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-size: 0.84rem; font-weight: 800; color: #ffffff;" id="top-username">Athlete</span>
+                            <span class="header-user-phone" id="top-phone">📱 Phone</span>
+                        </div>
+                    </div>
+                    <button class="btn-signout" onclick="openAuthModal()" title="Switch athlete or log in with credentials">Switch / Login</button>
                     <a href="mobile.html" class="btn btn-secondary btn-sm" title="Open mobile smartphone interactive view">📱 Mobile View</a>
                     <button class="btn btn-secondary btn-sm" onclick="addWater(250)">💧 +250ml</button>
                     <button class="btn btn-primary btn-sm" onclick="openLogModal()">+ Log Food</button>
@@ -78,18 +87,18 @@
                     <div class="card macro-card card-cal">
                         <div class="card-header">
                             <span class="card-title">Daily Energy Budget</span>
-                            <span class="macro-badge badge-cal" id="dash-cal-status">In Deficit</span>
+                            <span class="macro-badge badge-cal" id="dash-cal-status">Ready to Track</span>
                         </div>
                         <div class="macro-values">
-                            <div class="primary-metric" id="dash-cal-consumed">921</div>
-                            <div class="secondary-metric">/ <span id="dash-cal-target">1850</span> kcal</div>
+                            <div class="primary-metric" id="dash-cal-consumed">0</div>
+                            <div class="secondary-metric">/ <span id="dash-cal-target">2000</span> kcal</div>
                         </div>
                         <div class="progress-track">
-                            <div class="progress-fill fill-cal" id="dash-cal-fill" style="width: 50%;"></div>
+                            <div class="progress-fill fill-cal" id="dash-cal-fill" style="width: 0%;"></div>
                         </div>
                         <div class="macro-footer">
                             <span>Remaining Budget</span>
-                            <strong id="dash-cal-rem">929 kcal</strong>
+                            <strong id="dash-cal-rem">2000 kcal</strong>
                         </div>
                     </div>
 
@@ -100,15 +109,15 @@
                             <span class="macro-badge badge-prot">MPS Target</span>
                         </div>
                         <div class="macro-values">
-                            <div class="primary-metric" id="dash-p-consumed">85.9<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-p-target">135</span>g</div>
+                            <div class="primary-metric" id="dash-p-consumed">0.0<small>g</small></div>
+                            <div class="secondary-metric">/ <span id="dash-p-target">140</span>g</div>
                         </div>
                         <div class="progress-track">
-                            <div class="progress-fill fill-prot" id="dash-p-fill" style="width: 63%;"></div>
+                            <div class="progress-fill fill-prot" id="dash-p-fill" style="width: 0%;"></div>
                         </div>
                         <div class="macro-footer">
                             <span>Remaining</span>
-                            <strong id="dash-p-rem">49.1g</strong>
+                            <strong id="dash-p-rem">140.0g</strong>
                         </div>
                     </div>
 
@@ -119,15 +128,15 @@
                             <span class="macro-badge badge-carbs">Glycogen</span>
                         </div>
                         <div class="macro-values">
-                            <div class="primary-metric" id="dash-c-consumed">103.0<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-c-target">180</span>g</div>
+                            <div class="primary-metric" id="dash-c-consumed">0.0<small>g</small></div>
+                            <div class="secondary-metric">/ <span id="dash-c-target">200</span>g</div>
                         </div>
                         <div class="progress-track">
-                            <div class="progress-fill fill-carbs" id="dash-c-fill" style="width: 57%;"></div>
+                            <div class="progress-fill fill-carbs" id="dash-c-fill" style="width: 0%;"></div>
                         </div>
                         <div class="macro-footer">
-                            <span>Dietary Fiber</span>
-                            <strong id="dash-fiber-val">14.0g / 30g</strong>
+                            <span>Remaining</span>
+                            <strong id="dash-c-rem">200.0g</strong>
                         </div>
                     </div>
 
@@ -138,15 +147,15 @@
                             <span class="macro-badge badge-fats">Hormonal</span>
                         </div>
                         <div class="macro-values">
-                            <div class="primary-metric" id="dash-f-consumed">18.0<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-f-target">55</span>g</div>
+                            <div class="primary-metric" id="dash-f-consumed">0.0<small>g</small></div>
+                            <div class="secondary-metric">/ <span id="dash-f-target">65</span>g</div>
                         </div>
                         <div class="progress-track">
-                            <div class="progress-fill fill-fats" id="dash-f-fill" style="width: 32%;"></div>
+                            <div class="progress-fill fill-fats" id="dash-f-fill" style="width: 0%;"></div>
                         </div>
                         <div class="macro-footer">
                             <span>Remaining</span>
-                            <strong id="dash-f-rem">37.0g</strong>
+                            <strong id="dash-f-rem">65.0g</strong>
                         </div>
                     </div>
                 </div>
@@ -157,25 +166,29 @@
                     <div class="diary-section">
                         <div class="section-header">
                             <h2 style="font-size: 1.25rem; font-weight: 800;">Logged Meals & Diary</h2>
-                            <span class="macro-badge badge-cal" id="diary-meals-count">2 meals tracked</span>
+                            <span class="macro-badge badge-cal" id="diary-meals-count">0 meals tracked</span>
                         </div>
 
                         <!-- Breakfast -->
                         <div class="meal-slot-group">
                             <div class="meal-slot-header">
                                 <h3>🌅 Breakfast</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-breakfast">364 kcal</span>
+                                <span class="meal-slot-subtotal" id="subtotal-breakfast">0 kcal</span>
                             </div>
-                            <div id="list-breakfast"></div>
+                            <div id="list-breakfast">
+                                <div class="empty-slot-btn" onclick="openLogModalFor('breakfast')">+ Tap to log Breakfast</div>
+                            </div>
                         </div>
 
                         <!-- Lunch -->
                         <div class="meal-slot-group">
                             <div class="meal-slot-header">
                                 <h3>☀️ Lunch</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-lunch">557 kcal</span>
+                                <span class="meal-slot-subtotal" id="subtotal-lunch">0 kcal</span>
                             </div>
-                            <div id="list-lunch"></div>
+                            <div id="list-lunch">
+                                <div class="empty-slot-btn" onclick="openLogModalFor('lunch')">+ Tap to log Lunch</div>
+                            </div>
                         </div>
 
                         <!-- Dinner -->
@@ -208,11 +221,11 @@
                                     <p style="font-size: 0.78rem; color: var(--text-secondary);">Optimal electrolyte-fluid homeostasis</p>
                                 </div>
                                 <div class="water-amount">
-                                    <span id="dash-water-num">1,600</span> / <span id="dash-water-target">2,500</span> ml
+                                    <span id="dash-water-num">0</span> / <span id="dash-water-target">2,500</span> ml
                                 </div>
                             </div>
                             <div class="progress-track" style="margin-bottom: 14px;">
-                                <div class="progress-fill fill-water" id="dash-water-fill" style="width: 64%;"></div>
+                                <div class="progress-fill fill-water" id="dash-water-fill" style="width: 0%;"></div>
                             </div>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-secondary btn-sm" onclick="addWater(250)">+250 ml (Cup)</button>
@@ -469,42 +482,128 @@
     </div>
 
     <!-- =========================================================================
-         USER AUTHENTICATION & PROFILE SWITCHER MODAL
+         USER AUTHENTICATION PORTAL (PHONE NUMBER, NAME, PASSWORD)
          ========================================================================= -->
     <div class="auth-modal-overlay" id="auth-modal" style="display: none;">
-        <div class="auth-modal-card">
+        <div class="auth-modal-card" style="width: 520px; max-width: 95vw;">
             <div class="auth-header">
-                <h3>Athlete & Client Profile Switcher</h3>
-                <p>Select an existing user profile or register a new personalized account</p>
+                <div style="font-size: 2.2rem; margin-bottom: 8px;">🥗</div>
+                <h3 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">NutriAI Personal Gateway</h3>
+                <p>Personalized Clinical Nutrition & Metabolic Health Assistant</p>
             </div>
 
-            <!-- Profile List -->
-            <div class="user-switch-list" id="users-switch-container">
-                <!-- Injected via JS -->
+            <!-- Feedback Alert -->
+            <div id="auth-alert" class="auth-feedback-alert"></div>
+
+            <!-- Tabs: Sign In / Create Account -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">Sign In</button>
+                <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">Create Account</button>
             </div>
 
-            <div class="auth-divider">
-                <span>OR REGISTER NEW ATHLETE</span>
-            </div>
+            <!-- TAB 1: SIGN IN (Phone Number + Password) -->
+            <div id="pane-signin">
+                <form onsubmit="handleLoginSubmit(event)">
+                    <label class="input-label">📱 Phone Number</label>
+                    <input type="text" class="input-field-custom" id="login-phone" placeholder="e.g. +1 555-0199" required autocomplete="tel">
 
-            <!-- New User Form -->
-            <form onsubmit="handleRegisterNewUser(event)">
-                <input type="text" class="input-field-custom" id="reg-name" placeholder="Full Name (e.g. Elena Rostova)" required>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="number" class="input-field-custom" id="reg-cal" placeholder="Calorie Target (e.g. 1950)" required>
-                    <input type="number" class="input-field-custom" id="reg-prot" placeholder="Protein Goal g (e.g. 140)" required>
+                    <label class="input-label">🔑 Specific Password</label>
+                    <input type="password" class="input-field-custom" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 0.95rem; margin-top: 6px;">Sign In to Personal Dashboard</button>
+                </form>
+
+                <div class="auth-divider" style="margin-top: 22px;">
+                    <span>OR TAP QUICK TEST PROFILE</span>
                 </div>
-                <select class="input-field-custom" id="reg-goal" required>
-                    <option value="fat_loss">Goal: Fat Loss Deficit</option>
-                    <option value="muscle_gain">Goal: Muscle Hypertrophy</option>
-                    <option value="metabolic_health">Goal: Metabolic Health & Keto</option>
-                    <option value="athletic_performance">Goal: Athletic Endurance</option>
-                </select>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeAuthModal()">Close</button>
-                    <button type="submit" class="btn btn-primary">Create Profile & Log In</button>
+
+                <div class="auth-demo-chips">
+                    <div class="demo-chip" onclick="fillDemoCredentials('alex')">
+                        <div>
+                            <div class="demo-chip-name">Alex Morgan (Fat Loss Deficit)</div>
+                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 1,850 kcal • 135g Protein</div>
+                        </div>
+                        <div class="demo-chip-meta">📱 +1 555-0199</div>
+                    </div>
+                    <div class="demo-chip" onclick="fillDemoCredentials('sarah')">
+                        <div>
+                            <div class="demo-chip-name">Sarah Chen (Keto Protocol)</div>
+                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 2,100 kcal • 140g Protein</div>
+                        </div>
+                        <div class="demo-chip-meta">📱 +1 555-0288</div>
+                    </div>
+                    <div class="demo-chip" onclick="fillDemoCredentials('marcus')">
+                        <div>
+                            <div class="demo-chip-name">Marcus Vance (Hypertrophy Athlete)</div>
+                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 3,100 kcal • 195g Protein</div>
+                        </div>
+                        <div class="demo-chip-meta">📱 +1 555-0377</div>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <!-- TAB 2: REGISTER (Full Name + Phone Number + Specific Password + Target) -->
+            <div id="pane-register" style="display: none;">
+                <form onsubmit="handleRegisterSubmit(event)">
+                    <label class="input-label">👤 Full Name</label>
+                    <input type="text" class="input-field-custom" id="reg-name" placeholder="e.g. Anurag Anand" required autocomplete="name">
+
+                    <label class="input-label">📱 Phone Number</label>
+                    <input type="text" class="input-field-custom" id="reg-phone" placeholder="e.g. +1 555-0123" required autocomplete="tel">
+
+                    <label class="input-label">🔑 Specific Password</label>
+                    <input type="password" class="input-field-custom" id="reg-password" placeholder="Create your account password" required autocomplete="new-password">
+
+                    <label class="input-label">🎯 Primary Health Goal</label>
+                    <select class="input-field-custom" id="reg-goal" onchange="autoCalculateMacroTargets()" required>
+                        <option value="fat_loss">Fat Loss & Caloric Deficit</option>
+                        <option value="muscle_gain">Muscle Hypertrophy & Bulk</option>
+                        <option value="metabolic_health">Metabolic Health & Ketosis</option>
+                        <option value="athletic_performance">Athletic Endurance & Performance</option>
+                        <option value="maintenance">Balanced Maintenance</option>
+                    </select>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="input-label">🔥 Daily Calorie Target</label>
+                            <input type="number" class="input-field-custom" id="reg-cal" value="2000" required>
+                        </div>
+                        <div>
+                            <label class="input-label">🥩 Daily Protein Goal (g)</label>
+                            <input type="number" class="input-field-custom" id="reg-prot" value="140" required>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 14px; line-height: 1.4;">
+                        🔒 <strong>Zero Prepopulation:</strong> Your dashboard starts completely clean (0 kcal consumed, 0 ml water) until you enter your meals.
+                    </p>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 0.95rem;">Create Account & Enter Dashboard</button>
+                </form>
+            </div>
+
+            <div style="display: flex; justify-content: center; margin-top: 16px;" id="auth-close-bar">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeAuthModal()" id="btn-cancel-auth" style="display: none;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         USER PROFILE & ACCOUNT DETAILS MODAL
+         ========================================================================= -->
+    <div class="auth-modal-overlay" id="profile-modal" style="display: none;">
+        <div class="auth-modal-card" style="width: 480px; max-width: 95vw;">
+            <div class="auth-header">
+                <h3>Athlete Profile & Account</h3>
+                <p>Personal identity & active macronutrient targets</p>
+            </div>
+            <div id="profile-card-content">
+                <!-- Injected dynamically via JS -->
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+                <button type="button" class="btn-signout" onclick="signOutUser()">Log Out / Switch User</button>
+                <button type="button" class="btn btn-primary" onclick="closeProfileModal()">Close</button>
+            </div>
         </div>
     </div>
 

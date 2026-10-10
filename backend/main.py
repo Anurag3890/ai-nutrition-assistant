@@ -155,12 +155,38 @@ try:
     def list_users():
         return data_store.get_all_users()
 
+    @app.post("/api/auth/login")
+    def auth_login(payload: dict = Body(...)):
+        phone_or_name = payload.get("phone_number") or payload.get("phone") or payload.get("username") or payload.get("name", "")
+        password = payload.get("password", "")
+        user = data_store.authenticate_user(phone_or_name, password)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid phone number or password")
+        return {"status": "authenticated", "user": user}
+
+    @app.post("/api/auth/register")
+    def auth_register(payload: dict = Body(...)):
+        full_name = payload.get("full_name") or payload.get("name", "Athlete")
+        phone = payload.get("phone_number") or payload.get("phone", "")
+        password = payload.get("password", "")
+        uid = payload.get("id") or ("user_" + str(abs(hash(phone + full_name)))[:8])
+        user_record = {
+            "id": uid,
+            "username": payload.get("username", full_name.lower().replace(" ", "_")[:15]),
+            "full_name": full_name,
+            "phone_number": phone,
+            "password_hash": password,
+            "email": payload.get("email", f"{uid}@nutriai.io"),
+            "daily_calorie_target": payload.get("daily_calorie_target", 2000.0),
+            "daily_protein_target_g": payload.get("daily_protein_target_g", 140.0),
+            "primary_goal": payload.get("primary_goal", "Fat Loss")
+        }
+        data_store.create_or_update_user(user_record)
+        return {"status": "created", "user": data_store.get_user(uid)}
+
     @app.post("/api/users/register")
     def register_user(payload: dict = Body(...)):
-        uid = payload.get("id") or ("user_" + str(abs(hash(payload.get("email", ""))))[:8])
-        payload["id"] = uid
-        data_store.create_or_update_user(payload)
-        return {"status": "created", "user": data_store.get_user(uid)}
+        return auth_register(payload)
 
     @app.post("/api/oracle/ask")
     def ask_omni_oracle(payload: dict = Body(...)):

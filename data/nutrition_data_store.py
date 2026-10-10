@@ -41,6 +41,15 @@ class NutritionDataStore:
                 with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
                     schema_sql = f.read()
                 conn.executescript(schema_sql)
+            # Automatic column migrations for phone_number and password_hash
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN phone_number TEXT")
+            except Exception:
+                pass
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
+            except Exception:
+                pass
             conn.commit()
 
     # ---------------------------------------------------------
@@ -112,17 +121,22 @@ class NutritionDataStore:
         fat_target = user_data.get("daily_fat_target_g", fat_target)
         water_target = user_data.get("daily_water_target_ml", 2800.0)
 
+        phone_num = user_data.get("phone_number", "")
+        pwd_hash = user_data.get("password_hash") or user_data.get("password", "")
+
         with self._get_connection() as conn:
             conn.execute("""
                 INSERT INTO users (
-                    id, username, email, full_name, age, sex, height_cm, 
+                    id, username, email, phone_number, password_hash, full_name, age, sex, height_cm, 
                     current_weight_kg, target_weight_kg, activity_level, 
                     primary_goal, dietary_preference, allergies, medical_conditions,
                     daily_calorie_target, daily_protein_target_g, daily_carbs_target_g,
                     daily_fat_target_g, daily_water_target_ml, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     full_name=excluded.full_name,
+                    phone_number=COALESCE(excluded.phone_number, users.phone_number),
+                    password_hash=COALESCE(excluded.password_hash, users.password_hash),
                     age=excluded.age,
                     current_weight_kg=excluded.current_weight_kg,
                     target_weight_kg=excluded.target_weight_kg,
@@ -136,8 +150,9 @@ class NutritionDataStore:
                     updated_at=excluded.updated_at
             """, (
                 user_id,
-                user_data.get("username", "user_" + user_id[:6]),
-                user_data.get("email", f"{user_id[:6]}@example.com"),
+                user_data.get("username", "user_" + user_id),
+                user_data.get("email", f"{user_id}@example.com"),
+                phone_num, pwd_hash,
                 user_data.get("full_name", "Nutrition Enthusiast"),
                 age, sex, height, weight,
                 user_data.get("target_weight_kg", weight),
@@ -157,6 +172,29 @@ class NutritionDataStore:
             cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
             row = cursor.fetchone()
             return dict(row) if row else None
+
+    def get_user_by_phone(self, phone: str) -> Optional[Dict[str, Any]]:
+        clean_phone = "".join(filter(str.isalnum, phone))
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE phone_number = ? OR REPLACE(REPLACE(phone_number, '+', ''), ' ', '') LIKE ?", (phone, f"%{clean_phone}%"))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+    def authenticate_user(self, phone_or_name: str, password: str) -> Optional[Dict[str, Any]]:
+        clean_input = phone_or_name.strip()
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT * FROM users 
+                WHERE (phone_number = ? OR username = ? OR full_name = ? OR email = ?)
+            """, (clean_input, clean_input, clean_input, clean_input))
+            row = cursor.fetchone()
+            if row:
+                u = dict(row)
+                if not u.get("password_hash") or u.get("password_hash") == password:
+                    return u
+            return None
 
     # ---------------------------------------------------------
     # FOOD ITEM REFERENCE LIBRARY
@@ -454,6 +492,8 @@ class NutritionDataStore:
         self.create_or_update_user({
             "id": u1_id,
             "username": "alex_morgan",
+            "phone_number": "+1 555-0199",
+            "password": "Password123!",
             "email": "alex@nutriai.io",
             "full_name": "Alex Morgan",
             "age": 27,
@@ -476,6 +516,8 @@ class NutritionDataStore:
         self.create_or_update_user({
             "id": u2_id,
             "username": "sarah_chen",
+            "phone_number": "+1 555-0288",
+            "password": "KetoSecret123!",
             "email": "sarah@nutriai.io",
             "full_name": "Sarah Chen",
             "age": 31,
@@ -498,6 +540,8 @@ class NutritionDataStore:
         self.create_or_update_user({
             "id": u3_id,
             "username": "marcus_vance",
+            "phone_number": "+1 555-0377",
+            "password": "AthletePower123!",
             "email": "marcus@nutriai.io",
             "full_name": "Marcus Vance",
             "age": 25,
@@ -515,7 +559,7 @@ class NutritionDataStore:
             "daily_water_target_ml": 3800.0
         })
 
-        # Add Standard Food Database items
+        # Add Standard Food Database items for nutritional lookup
         sample_foods = [
             {"name": "Rolled Oats (Dry)", "brand": "Generic", "category": "Grains", "serving_size": 50, "serving_unit": "g", "calories": 187, "protein_g": 6.5, "carbs_total_g": 33, "fiber_g": 5.0, "fat_total_g": 3.2, "iron_mg": 2.1},
             {"name": "Whey Protein Isolate (Vanilla)", "brand": "Optimum", "category": "Supplements", "serving_size": 30, "serving_unit": "g", "calories": 120, "protein_g": 25.0, "carbs_total_g": 2.0, "fiber_g": 0.0, "fat_total_g": 1.0, "calcium_mg": 140},
@@ -531,21 +575,7 @@ class NutritionDataStore:
         for item in sample_foods:
             self.add_food_item(item)
 
-        # Log Alex's meals
-        self.log_meal({"user_id": u1_id, "log_date": today_str, "log_time": "08:15:00", "meal_type": "breakfast", "food_name": "Oatmeal with Blueberries & Vanilla Whey", "calories": 364, "protein_g": 32.2, "carbs_g": 49.5, "fat_g": 4.5, "fiber_g": 7.4})
-        self.log_meal({"user_id": u1_id, "log_date": today_str, "log_time": "13:00:00", "meal_type": "lunch", "food_name": "Grilled Chicken, Jasmine Rice & Broccoli with Avocado", "calories": 557, "protein_g": 53.7, "carbs_g": 53.5, "fat_g": 13.5, "fiber_g": 6.6})
-        self.log_water(u1_id, 1600, "water", today_str)
-
-        # Log Sarah's Keto meals
-        self.log_meal({"user_id": u2_id, "log_date": today_str, "log_time": "09:00:00", "meal_type": "breakfast", "food_name": "Avocado & 3 Poached Pasture-Raised Eggs in Olive Oil", "calories": 480, "protein_g": 24.0, "carbs_g": 5.0, "fat_g": 40.0, "fiber_g": 4.0})
-        self.log_meal({"user_id": u2_id, "log_date": today_str, "log_time": "13:30:00", "meal_type": "lunch", "food_name": "Wild Salmon Fillet with Asparagus & Garlic Herb Butter", "calories": 620, "protein_g": 45.0, "carbs_g": 4.0, "fat_g": 46.0, "fiber_g": 3.0})
-        self.log_water(u2_id, 2200, "water", today_str)
-
-        # Log Marcus's Athlete meals
-        self.log_meal({"user_id": u3_id, "log_date": today_str, "log_time": "07:30:00", "meal_type": "breakfast", "food_name": "Monster Protein Oats with Banana, Honey & Peanut Butter", "calories": 850, "protein_g": 55.0, "carbs_g": 115.0, "fat_g": 22.0, "fiber_g": 12.0})
-        self.log_meal({"user_id": u3_id, "log_date": today_str, "log_time": "12:45:00", "meal_type": "lunch", "food_name": "Double Chicken Breast Rice Bowl with Sweet Potato", "calories": 920, "protein_g": 68.0, "carbs_g": 125.0, "fat_g": 16.0, "fiber_g": 9.0})
-        self.log_water(u3_id, 2600, "water", today_str)
-
+        # NOTE: No fake pre-entered meals! Everything starts clean (0 kcal consumed) until user logs via app.
         return u1_id
 
 if __name__ == "__main__":

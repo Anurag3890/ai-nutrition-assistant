@@ -8,7 +8,9 @@
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE NOT NULL,
+    email TEXT,
+    phone_number TEXT UNIQUE,
+    password_hash TEXT,
     full_name TEXT,
     age INTEGER,
     sex TEXT CHECK(sex IN ('male', 'female', 'other')),

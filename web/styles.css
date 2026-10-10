@@ -957,6 +957,16 @@ body {
     color: var(--text-muted);
 }
 
+.input-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 .input-field-custom {
     width: 100%;
     padding: 12px 14px;
@@ -964,13 +974,173 @@ body {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     color: #ffffff;
-    font-size: 0.9rem;
-    margin-bottom: 12px;
+    font-size: 0.92rem;
+    margin-bottom: 14px;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .input-field-custom:focus {
     border-color: var(--accent-emerald);
+    box-shadow: 0 0 0 3px var(--accent-emerald-glow);
+}
+
+/* Auth Tabs & Hero Portal */
+.auth-tabs {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-surface);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    margin-bottom: 22px;
+    border: 1px solid var(--border-subtle);
+}
+
+.auth-tab-btn {
+    flex: 1;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.auth-tab-btn.active {
+    background: var(--bg-card);
+    color: var(--accent-emerald);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.auth-demo-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.demo-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.demo-chip:hover {
+    border-color: var(--accent-emerald);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.demo-chip-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.demo-chip-meta {
+    font-size: 0.75rem;
+    color: var(--accent-sapphire);
+    font-family: var(--font-mono);
+}
+
+.auth-feedback-alert {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.84rem;
+    margin-bottom: 14px;
+    display: none;
+}
+.auth-feedback-alert.error {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    color: #fda4af;
+    display: block;
+}
+.auth-feedback-alert.success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+    display: block;
+}
+
+/* User Header Pill */
+.user-header-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px 6px 6px;
+}
+
+.header-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: #ffffff;
+}
+
+.header-user-phone {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent-sapphire);
+    background: rgba(56, 189, 248, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+}
+
+.btn-signout {
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    color: #fda4af;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-signout:hover {
+    background: rgba(244, 63, 94, 0.25);
+    border-color: #f43f5e;
+    color: #ffffff;
+}
+
+/* Empty meal slot styling */
+.empty-slot-btn {
+    padding: 16px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.empty-slot-btn:hover {
+    border-color: var(--accent-emerald);
+    color: var(--accent-emerald);
+    background: rgba(16, 185, 129, 0.05);
 }
 
 @media (max-width: 1100px) {

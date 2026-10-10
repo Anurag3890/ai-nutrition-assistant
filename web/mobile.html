@@ -98,8 +98,9 @@
             font-size: 0.8rem;
             color: #ffffff;
         }
-        .m-name { font-size: 0.95rem; font-weight: 800; }
+        .m-name { font-size: 0.92rem; font-weight: 800; }
         .m-goal { font-size: 0.72rem; color: #10b981; font-weight: 600; }
+        .m-phone-badge { font-size: 0.68rem; color: #38bdf8; font-family: ui-monospace, monospace; }
 
         .btn-m-action {
             background: #10b981;
@@ -109,6 +110,19 @@
             border-radius: 8px;
             font-weight: 800;
             font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-m-action:hover { opacity: 0.9; }
+
+        .btn-m-ghost {
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
             cursor: pointer;
         }
 
@@ -158,146 +172,199 @@
             margin-top: 12px;
         }
         .m-tri-pill {
-            width: 31%;
             background: #0e1526;
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 10px;
-            padding: 8px;
+            padding: 8px 10px;
             text-align: center;
+            flex: 1;
+            margin: 0 4px;
         }
-        .m-tri-label { font-size: 0.68rem; font-weight: 700; color: #94a3b8; }
-        .m-tri-val { font-size: 0.85rem; font-weight: 800; margin-top: 2px; font-family: ui-monospace, monospace; }
+        .m-tri-label { font-size: 0.68rem; color: #94a3b8; font-weight: 700; }
+        .m-tri-val { font-size: 0.85rem; font-weight: 800; font-family: ui-monospace, monospace; margin-top: 2px; }
 
         /* Hydration */
-        .m-water-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .m-water-val { font-size: 1.1rem; font-weight: 800; color: #06b6d4; font-family: ui-monospace, monospace; }
-        .m-water-btns { display: flex; gap: 8px; margin-top: 10px; }
+        .m-water-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .m-water-val { font-size: 1.15rem; font-weight: 800; font-family: ui-monospace, monospace; color: #06b6d4; }
+        .m-water-btns { display: flex; gap: 8px; }
         .m-w-btn {
             background: #0e1526;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            color: #38bdf8;
-            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
-            font-size: 0.72rem;
+            padding: 6px 12px;
+            font-size: 0.75rem;
             font-weight: 700;
+            color: #f8fafc;
             cursor: pointer;
         }
 
-        /* Meal Cards */
+        /* Meal items */
         .m-meal-item {
             background: #131b2e;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
         }
-        .m-meal-top { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; margin-bottom: 3px; }
-        .m-meal-title { font-size: 0.88rem; font-weight: 800; }
-        .m-meal-meta { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; font-family: ui-monospace, monospace; }
+        .m-meal-top { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; margin-bottom: 4px; }
+        .m-meal-title { font-size: 0.9rem; font-weight: 700; }
+        .m-meal-meta { font-size: 0.72rem; color: #94a3b8; font-family: ui-monospace, monospace; margin-top: 4px; }
 
-        /* Oracle Screen on Mobile */
-        .m-oracle-screen { display: flex; flex-direction: column; gap: 12px; }
+        .m-empty-slot {
+            padding: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .m-empty-slot:hover { border-color: #10b981; color: #10b981; }
+
+        /* Bottom Tabbar */
+        .m-tabbar {
+            height: 72px;
+            background: #0e1526;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding-bottom: 12px;
+        }
+        .m-tabbtn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .m-tabbtn span:first-child { font-size: 1.25rem; }
+        .m-tabbtn.active { color: #10b981; }
+
+        /* Mobile Auth View */
+        .m-auth-screen {
+            position: absolute;
+            inset: 0;
+            background: #080c14;
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+        .m-auth-tabs {
+            display: flex;
+            background: #0e1526;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .m-auth-tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .m-auth-tab.active { background: #131b2e; color: #10b981; }
+
+        .m-field {
+            width: 100%;
+            padding: 10px 12px;
+            background: #131b2e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        .m-field:focus { border-color: #10b981; }
+
+        /* Oracle on Mobile */
+        .m-oracle-screen { display: flex; flex-direction: column; height: 100%; }
         .m-search-input {
             width: 100%;
             padding: 12px 14px;
             background: #131b2e;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
             color: #ffffff;
             font-size: 0.85rem;
+            margin-bottom: 14px;
             outline: none;
         }
         .m-search-input:focus { border-color: #10b981; }
+        .m-oracle-chip {
+            background: #0e1526;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
         .m-oracle-answer-card {
             background: #131b2e;
             border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 14px;
-            padding: 16px;
+            padding: 14px;
+            margin-top: 10px;
             display: none;
         }
-        .m-oracle-chip {
-            background: #0e1526;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 10px;
-            cursor: pointer;
-            margin-bottom: 6px;
-        }
 
-        /* Camera Scanner Screen on Mobile */
+        /* Camera Scanner Screen */
         .m-scanner-screen {
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100%;
             text-align: center;
-            padding: 10px;
         }
         .m-lens-box {
             width: 260px;
             height: 260px;
             border: 2px dashed #10b981;
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
+            background: rgba(16, 185, 129, 0.04);
+            cursor: pointer;
             margin-bottom: 20px;
-            cursor: pointer;
-            background: #0e1526;
         }
 
-        /* Bottom Tab Bar */
-        .m-tabbar {
-            height: 68px;
-            background: #0e1526;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        .m-tabbtn {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: #64748b;
-            font-size: 0.72rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .m-tabbtn.active { color: #10b981; }
-        .m-tabbtn span:first-child { font-size: 1.25rem; }
-
-        /* Modal Overlay */
+        /* Mobile Modals */
         .m-modal {
             position: absolute;
             inset: 0;
-            background: rgba(4, 7, 14, 0.85);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 200;
             display: flex;
             align-items: flex-end;
-            z-index: 200;
         }
         .m-sheet {
-            background: #131b2e;
-            width: 100%;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            padding: 24px 20px 34px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .m-field {
-            width: 100%;
-            padding: 10px 12px;
             background: #0e1526;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
+            width: 100%;
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
@@ -305,7 +372,7 @@
 
     <div class="simulator-nav">
         <a href="index.html" class="back-link">← Switch to Desktop Dashboard</a>
-        <div style="font-size: 0.95rem; font-weight: 800; color: #ffffff;">📱 Mobile App Engine (Luxury Obsidian Build)</div>
+        <div style="font-size: 0.95rem; font-weight: 800; color: #ffffff;">📱 Mobile App Engine</div>
     </div>
 
     <!-- Smartphone Bezel -->
@@ -315,30 +382,96 @@
             <div class="island-sensor"></div>
         </div>
 
-        <!-- Mobile Header with User Switcher -->
-        <header class="m-header">
-            <div class="m-user-chip" onclick="toggleMobileUserSwitch()" title="Tap to switch user profile">
-                <div class="m-avatar" id="mob-avatar">AM</div>
-                <div>
-                    <div class="m-name" id="mob-name">Alex Morgan ▾</div>
-                    <div class="m-goal" id="mob-goal">Fat Loss Deficit (1,850 kcal)</div>
+        <!-- AUTH GATEWAY OVERLAY (Inside Phone Frame) -->
+        <div class="m-auth-screen" id="mob-auth-screen" style="display: none;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 2.2rem; margin-bottom: 6px;">🥗</div>
+                <div style="font-size: 1.3rem; font-weight: 800;">NutriAI Mobile</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">Personalized Health & Nutrition Assistant</div>
+            </div>
+
+            <!-- Tabs: Sign In / Register -->
+            <div class="m-auth-tabs">
+                <button type="button" class="m-auth-tab active" id="mob-tab-btn-signin" onclick="switchMobAuthTab('signin')">Sign In</button>
+                <button type="button" class="m-auth-tab" id="mob-tab-btn-reg" onclick="switchMobAuthTab('reg')">Create Account</button>
+            </div>
+
+            <div id="mob-auth-alert" style="display: none; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: #fda4af; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; margin-bottom: 12px;"></div>
+
+            <!-- Sign In Pane -->
+            <div id="mob-pane-signin">
+                <form onsubmit="handleMobLogin(event)">
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">📱 PHONE NUMBER</div>
+                    <input type="text" class="m-field" id="mob-inp-phone" placeholder="e.g. +1 555-0199" required>
+
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">🔑 SPECIFIC PASSWORD</div>
+                    <input type="password" class="m-field" id="mob-inp-pass" placeholder="Enter password" required>
+
+                    <button type="submit" class="btn-m-action" style="width: 100%; padding: 12px; margin-top: 4px;">Sign In to Personal Diary</button>
+                </form>
+
+                <div style="text-align: center; font-size: 0.7rem; color: #64748b; margin: 18px 0 10px; font-weight: 700;">OR TAP TEST ATHLETE:</div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <button class="btn-m-ghost" style="text-align: left; padding: 10px;" onclick="fillMobDemo('alex')">
+                        <strong>Alex Morgan</strong> (+1 555-0199) • Fat Loss
+                    </button>
+                    <button class="btn-m-ghost" style="text-align: left; padding: 10px;" onclick="fillMobDemo('sarah')">
+                        <strong>Sarah Chen</strong> (+1 555-0288) • Keto
+                    </button>
+                    <button class="btn-m-ghost" style="text-align: left; padding: 10px;" onclick="fillMobDemo('marcus')">
+                        <strong>Marcus Vance</strong> (+1 555-0377) • Hypertrophy
+                    </button>
                 </div>
             </div>
-            <button class="btn-m-action" onclick="openMobLogModal()">+ Log</button>
+
+            <!-- Register Pane -->
+            <div id="mob-pane-reg" style="display: none;">
+                <form onsubmit="handleMobRegister(event)">
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">👤 FULL NAME</div>
+                    <input type="text" class="m-field" id="mob-reg-name" placeholder="e.g. Anurag Anand" required>
+
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">📱 PHONE NUMBER</div>
+                    <input type="text" class="m-field" id="mob-reg-phone" placeholder="e.g. +1 555-0123" required>
+
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">🔑 SPECIFIC PASSWORD</div>
+                    <input type="password" class="m-field" id="mob-reg-pass" placeholder="Create password" required>
+
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; margin-bottom: 4px;">🎯 DAILY CALORIE TARGET</div>
+                    <input type="number" class="m-field" id="mob-reg-cal" value="2000" required>
+
+                    <button type="submit" class="btn-m-action" style="width: 100%; padding: 12px; margin-top: 4px;">Create Account & Start Fresh</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mobile Header with User Identifier -->
+        <header class="m-header">
+            <div class="m-user-chip" onclick="openMobProfileModal()" title="View profile & account">
+                <div class="m-avatar" id="mob-avatar">AM</div>
+                <div>
+                    <div class="m-name" id="mob-name">Alex Morgan</div>
+                    <div class="m-phone-badge" id="mob-phone-sub">📱 +1 555-0199</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-m-ghost" onclick="openMobAuthModal()" title="Switch user account">Switch</button>
+                <button class="btn-m-action" onclick="openMobLogModal()">+ Log</button>
+            </div>
         </header>
 
         <!-- VIEW 1: TODAY / DASHBOARD -->
         <div class="m-viewport" id="tab-mob-today">
-            <!-- Calorie Card -->
+            <!-- Calorie Card (Starts at 0 consumed) -->
             <div class="m-card">
                 <div class="m-card-title">Daily Energy Budget</div>
                 <div class="m-cal-row">
                     <div>
-                        <div class="m-big-num" id="mob-consumed-cal">921</div>
+                        <div class="m-big-num" id="mob-consumed-cal">0</div>
                         <div style="font-size: 0.72rem; color: #64748b;">Consumed kcal</div>
                     </div>
                     <div class="m-badge-rem">
-                        <div class="m-rem-val" id="mob-rem-cal">929</div>
+                        <div class="m-rem-val" id="mob-rem-cal">1850</div>
                         <div class="m-rem-label">Remaining</div>
                     </div>
                 </div>
@@ -346,24 +479,24 @@
                 <div class="m-macro-triplet">
                     <div class="m-tri-pill">
                         <div class="m-tri-label">Protein</div>
-                        <div class="m-tri-val" style="color: #38bdf8;" id="mob-p-val">85.9 / 135g</div>
+                        <div class="m-tri-val" style="color: #38bdf8;" id="mob-p-val">0.0 / 135g</div>
                     </div>
                     <div class="m-tri-pill">
                         <div class="m-tri-label">Carbs</div>
-                        <div class="m-tri-val" style="color: #fbbf24;" id="mob-c-val">103 / 180g</div>
+                        <div class="m-tri-val" style="color: #fbbf24;" id="mob-c-val">0.0 / 180g</div>
                     </div>
                     <div class="m-tri-pill">
                         <div class="m-tri-label">Fats</div>
-                        <div class="m-tri-val" style="color: #f43f5e;" id="mob-f-val">18 / 55g</div>
+                        <div class="m-tri-val" style="color: #f43f5e;" id="mob-f-val">0.0 / 55g</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Hydration Card -->
+            <!-- Hydration Card (Starts at 0 ml) -->
             <div class="m-card">
                 <div class="m-water-row">
-                    <span style="font-size: 0.85rem; font-weight: 800;">💧 Hydration Status</span>
-                    <span class="m-water-val" id="mob-water-val">1,600 / 2,500 ml</span>
+                    <span style="font-size: 0.85rem; font-weight: 800;">💧 Cellular Hydration</span>
+                    <span class="m-water-val" id="mob-water-val">0 / 2,500 ml</span>
                 </div>
                 <div class="m-water-btns">
                     <button class="m-w-btn" onclick="addMobWater(250)">+250ml</button>
@@ -375,7 +508,7 @@
             <!-- Meal Ledger -->
             <div style="font-size: 0.85rem; font-weight: 800; margin: 12px 0 8px;">Logged Meals</div>
             <div id="mob-meals-list">
-                <!-- Rendered dynamically -->
+                <!-- Clean slots rendered dynamically -->
             </div>
         </div>
 
@@ -383,7 +516,7 @@
         <div class="m-viewport" id="tab-mob-oracle" style="display: none;">
             <div class="m-oracle-screen">
                 <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 2px;">🧠 Omni-AI Health Oracle</div>
-                <p style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;">Ask anything about nutrition, biohacking, fasting, supplements, or metabolism.</p>
+                <p style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;">Clinical queries on nutrition, fasting, supplements, or metabolism.</p>
 
                 <form onsubmit="handleMobOracleQuery(event)">
                     <input type="text" class="m-search-input" id="mob-oracle-input" placeholder="Ask anything (e.g. Creatine, 16:8 fasting, gut health)..." required>
@@ -476,82 +609,191 @@
     </div>
 
     <script>
-        const USERS = {
+        // Accounts database shared or isolated for simulator
+        const MOB_ACCOUNTS = {
             alex: {
+                id: "alex",
                 name: "Alex Morgan",
+                phone: "+1 555-0199",
+                password: "Password123!",
                 avatar: "AM",
-                goal: "Fat Loss Deficit (1,850 kcal)",
-                targets: { cal: 1850, p: 135, c: 180, f: 55, water: 2500 },
-                water: 1600,
-                meals: [
-                    { cat: "Breakfast", title: "Oatmeal with Whey & Berries", cal: 364, p: 32.2, c: 49.5, f: 4.5 },
-                    { cat: "Lunch", title: "Chicken, Rice, Broccoli & Avocado", cal: 557, p: 53.7, c: 53.5, f: 13.5 }
-                ]
+                goal: "Fat Loss Deficit",
+                targets: { cal: 1850, p: 135, c: 180, f: 55, water: 2500 }
             },
             sarah: {
+                id: "sarah",
                 name: "Sarah Chen",
+                phone: "+1 555-0288",
+                password: "KetoSecret123!",
                 avatar: "SC",
-                goal: "Metabolic Ketosis (2,100 kcal)",
-                targets: { cal: 2100, p: 140, c: 35, f: 155, water: 3000 },
-                water: 2200,
-                meals: [
-                    { cat: "Breakfast", title: "Avocado & 3 Poached Pasture Eggs", cal: 480, p: 24.0, c: 5.0, f: 40.0 },
-                    { cat: "Lunch", title: "Wild Salmon with Herb Butter", cal: 620, p: 45.0, c: 4.0, f: 46.0 }
-                ]
+                goal: "Metabolic Ketosis",
+                targets: { cal: 2100, p: 140, c: 35, f: 155, water: 3000 }
             },
             marcus: {
+                id: "marcus",
                 name: "Marcus Vance",
+                phone: "+1 555-0377",
+                password: "AthletePower123!",
                 avatar: "MV",
-                goal: "Athletic Hypertrophy (3,100 kcal)",
-                targets: { cal: 3100, p: 195, c: 410, f: 75, water: 3800 },
-                water: 2600,
-                meals: [
-                    { cat: "Breakfast", title: "Monster Protein Oats with Banana", cal: 850, p: 55.0, c: 115.0, f: 22.0 },
-                    { cat: "Lunch", title: "Double Chicken Sweet Potato Bowl", cal: 920, p: 68.0, c: 125.0, f: 16.0 }
-                ]
+                goal: "Athletic Hypertrophy",
+                targets: { cal: 3100, p: 195, c: 410, f: 75, water: 3800 }
             }
         };
 
-        let activeKey = "alex";
+        // ZERO-PREPOPULATION: strictly start with empty meals and 0 water
+        function getMobMeals(userId) {
+            try {
+                const s = localStorage.getItem("mob_meals_" + userId);
+                if (s) return JSON.parse(s);
+            } catch(e) {}
+            return [];
+        }
+        function saveMobMeals(userId, arr) {
+            localStorage.setItem("mob_meals_" + userId, JSON.stringify(arr));
+        }
 
-        function getCur() { return USERS[activeKey]; }
+        function getMobWater(userId) {
+            try {
+                const s = localStorage.getItem("mob_water_" + userId);
+                if (s !== null) return parseInt(s, 10) || 0;
+            } catch(e) {}
+            return 0;
+        }
+        function saveMobWater(userId, ml) {
+            localStorage.setItem("mob_water_" + userId, ml.toString());
+        }
+
+        let activeMobUser = "alex";
+
+        function getCur() {
+            return MOB_ACCOUNTS[activeMobUser] || MOB_ACCOUNTS.alex;
+        }
 
         function renderMobile() {
             const u = getCur();
             document.getElementById("mob-avatar").textContent = u.avatar;
-            document.getElementById("mob-name").textContent = u.name + " ▾";
-            document.getElementById("mob-goal").textContent = u.goal;
+            document.getElementById("mob-name").textContent = u.name;
+            document.getElementById("mob-phone-sub").textContent = `📱 ${u.phone || 'Personal'}`;
 
-            const totCal = u.meals.reduce((s, m) => s + m.cal, 0);
-            const totP = u.meals.reduce((s, m) => s + m.p, 0);
+            const meals = getMobMeals(u.id);
+            const water = getMobWater(u.id);
+
+            const totCal = meals.reduce((s, m) => s + (Number(m.cal) || 0), 0);
+            const totP = meals.reduce((s, m) => s + (Number(m.p) || 0), 0);
 
             document.getElementById("mob-consumed-cal").textContent = Math.round(totCal);
             document.getElementById("mob-rem-cal").textContent = Math.max(0, Math.round(u.targets.cal - totCal));
             document.getElementById("mob-p-val").textContent = `${totP.toFixed(1)} / ${u.targets.p}g`;
-            document.getElementById("mob-c-val").textContent = `${u.targets.c}g Goal`;
-            document.getElementById("mob-f-val").textContent = `${u.targets.f}g Goal`;
+            document.getElementById("mob-c-val").textContent = `0.0 / ${u.targets.c}g`;
+            document.getElementById("mob-f-val").textContent = `0.0 / ${u.targets.f}g`;
 
-            document.getElementById("mob-water-val").textContent = `${u.water.toLocaleString()} / ${u.targets.water.toLocaleString()} ml`;
+            document.getElementById("mob-water-val").textContent = `${water.toLocaleString()} / ${u.targets.water.toLocaleString()} ml`;
 
             const list = document.getElementById("mob-meals-list");
-            list.innerHTML = u.meals.map(m => `
-                <div class="m-meal-item">
-                    <div class="m-meal-top">
-                        <span style="color: #10b981; text-transform: uppercase;">${m.cat}</span>
-                        <span>${m.cal} kcal</span>
+            if (meals.length === 0) {
+                list.innerHTML = `<div class="m-empty-slot" onclick="openMobLogModal()">+ Tap to log your first meal (0 kcal)</div>`;
+            } else {
+                list.innerHTML = meals.map((m, idx) => `
+                    <div class="m-meal-item">
+                        <div class="m-meal-top">
+                            <span style="color: #10b981; text-transform: uppercase;">${m.cat}</span>
+                            <span>${m.cal} kcal</span>
+                        </div>
+                        <div class="m-meal-title">${m.title}</div>
+                        <div class="m-meal-meta">Protein: ${m.p}g • Carbs: ${m.c || 0}g • Fat: ${m.f || 0}g</div>
                     </div>
-                    <div class="m-meal-title">${m.title}</div>
-                    <div class="m-meal-meta">Protein: ${m.p}g • Carbs: ${m.c}g • Fat: ${m.f}g</div>
-                </div>
-            `).join("");
+                `).join("");
+            }
         }
 
-        function toggleMobileUserSwitch() {
-            const keys = ["alex", "sarah", "marcus"];
-            const nextIdx = (keys.indexOf(activeKey) + 1) % keys.length;
-            activeKey = keys[nextIdx];
+        function switchMobAuthTab(tab) {
+            const signinBtn = document.getElementById("mob-tab-btn-signin");
+            const regBtn = document.getElementById("mob-tab-btn-reg");
+            const signinPane = document.getElementById("mob-pane-signin");
+            const regPane = document.getElementById("mob-pane-reg");
+            if (tab === "signin") {
+                signinBtn.classList.add("active");
+                regBtn.classList.remove("active");
+                signinPane.style.display = "block";
+                regPane.style.display = "none";
+            } else {
+                regBtn.classList.add("active");
+                signinBtn.classList.remove("active");
+                regPane.style.display = "block";
+                signinPane.style.display = "none";
+            }
+        }
+
+        function openMobAuthModal() {
+            document.getElementById("mob-auth-screen").style.display = "flex";
+        }
+        function closeMobAuthModal() {
+            document.getElementById("mob-auth-screen").style.display = "none";
+        }
+
+        function fillMobDemo(key) {
+            switchMobAuthTab('signin');
+            if (key === 'alex') {
+                document.getElementById("mob-inp-phone").value = "+1 555-0199";
+                document.getElementById("mob-inp-pass").value = "Password123!";
+            } else if (key === 'sarah') {
+                document.getElementById("mob-inp-phone").value = "+1 555-0288";
+                document.getElementById("mob-inp-pass").value = "KetoSecret123!";
+            } else if (key === 'marcus') {
+                document.getElementById("mob-inp-phone").value = "+1 555-0377";
+                document.getElementById("mob-inp-pass").value = "AthletePower123!";
+            }
+        }
+
+        function handleMobLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById("mob-inp-phone").value.trim();
+            const pass = document.getElementById("mob-inp-pass").value.trim();
+            const clean = phone.replace(/[\s\-\(\)]/g, "");
+
+            const found = Object.values(MOB_ACCOUNTS).find(u => {
+                const uClean = (u.phone || "").replace(/[\s\-\(\)]/g, "");
+                return (uClean === clean || u.phone === phone) && u.password === pass;
+            });
+
+            if (found) {
+                activeMobUser = found.id;
+                closeMobAuthModal();
+                renderMobile();
+            } else {
+                const al = document.getElementById("mob-auth-alert");
+                al.textContent = "Invalid phone or password. Use demo buttons below.";
+                al.style.display = "block";
+            }
+        }
+
+        function handleMobRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById("mob-reg-name").value.trim();
+            const phone = document.getElementById("mob-reg-phone").value.trim();
+            const pass = document.getElementById("mob-reg-pass").value.trim();
+            const cal = parseFloat(document.getElementById("mob-reg-cal").value) || 2000;
+
+            const id = "mob_" + Date.now();
+            const inits = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "AA";
+
+            MOB_ACCOUNTS[id] = {
+                id,
+                name,
+                phone,
+                password: pass,
+                avatar: inits,
+                goal: "Personal Protocol",
+                targets: { cal, p: 140, c: 200, f: 60, water: 2800 }
+            };
+
+            saveMobMeals(id, []);
+            saveMobWater(id, 0);
+
+            activeMobUser = id;
+            closeMobAuthModal();
             renderMobile();
-            alert(`Switched to active profile: ${getCur().name} (${getCur().goal})`);
+            alert(`Welcome, ${name}! Your clean mobile profile is active.`);
         }
 
         function switchMobTab(tab) {
@@ -564,21 +806,37 @@
             document.getElementById("m-btn-scanner").classList.toggle("active", tab === "scanner");
         }
 
-        function addMobWater(ml) { getCur().water += ml; renderMobile(); }
-        function resetMobWater() { getCur().water = 0; renderMobile(); }
+        function addMobWater(ml) {
+            const u = getCur();
+            const cur = getMobWater(u.id);
+            saveMobWater(u.id, cur + ml);
+            renderMobile();
+        }
+        function resetMobWater() {
+            const u = getCur();
+            saveMobWater(u.id, 0);
+            renderMobile();
+        }
 
         function openMobLogModal() { document.getElementById("mob-modal-log").style.display = "flex"; }
         function closeMobLogModal() { document.getElementById("mob-modal-log").style.display = "none"; }
 
         function saveMobLogMeal() {
-            const name = document.getElementById("m-inp-name").value;
+            const name = document.getElementById("m-inp-name").value.trim();
             const cal = parseFloat(document.getElementById("m-inp-cal").value) || 0;
             const p = parseFloat(document.getElementById("m-inp-prot").value) || 0;
             if (!name || !cal) return;
 
-            getCur().meals.push({ cat: "Dinner", title: name, cal, p, c: 20, f: 8 });
+            const u = getCur();
+            const meals = getMobMeals(u.id);
+            meals.push({ cat: "Dinner", title: name, cal, p, c: 20, f: 8 });
+            saveMobMeals(u.id, meals);
+
             renderMobile();
             closeMobLogModal();
+            document.getElementById("m-inp-name").value = "";
+            document.getElementById("m-inp-cal").value = "";
+            document.getElementById("m-inp-prot").value = "";
         }
 
         function simulateMobSnap() {
@@ -586,7 +844,10 @@
         }
 
         function addMobScannedMeal() {
-            getCur().meals.push({ cat: "Dinner", title: "Grilled Salmon with Asparagus (200g)", cal: 330, p: 41.0, c: 5.0, f: 17.0 });
+            const u = getCur();
+            const meals = getMobMeals(u.id);
+            meals.push({ cat: "Dinner", title: "Grilled Salmon with Asparagus (200g)", cal: 330, p: 41.0, c: 5.0, f: 17.0 });
+            saveMobMeals(u.id, meals);
             renderMobile();
             switchMobTab("today");
             alert("Added Grilled Salmon to Dinner!");

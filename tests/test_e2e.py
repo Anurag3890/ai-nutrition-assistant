@@ -15,6 +15,7 @@ Validates all 10 modules working together in harmony:
 import os
 import sys
 import unittest
+from datetime import date
 from PIL import Image
 import numpy as np
 
@@ -112,12 +113,50 @@ class TestAINutritionAssistantE2E(unittest.TestCase):
         self.assertIn("genai_explanation", output)
 
     def test_module_8_database_aggregations(self):
-        """Test Database stores meals and correctly calculates remaining calories and macros."""
-        summary = self.data_store.get_daily_summary(self.user_id)
+        """Test Database user authentication, zero-prepopulation initial state, and dynamic meal logging."""
+        # Verify user authentication with phone and password
+        auth_user = self.data_store.authenticate_user("+1 555-0199", "Password123!")
+        self.assertIsNotNone(auth_user)
+        self.assertEqual(auth_user["full_name"], "Alex Morgan")
+
+        # Zero-prepopulation verification for a fresh user
+        fresh_user_id = f"test_user_{os.getpid()}"
+        self.data_store.create_or_update_user({
+            "id": fresh_user_id,
+            "username": f"fresh_{os.getpid()}",
+            "email": f"fresh_{os.getpid()}@nutriai.io",
+            "phone_number": f"+1 555-9{os.getpid() % 1000:03d}",
+            "password": "CleanPassword1!",
+            "full_name": "Fresh Athlete",
+            "daily_calorie_target": 2000.0,
+            "daily_protein_target_g": 140.0
+        })
+
+        initial_summary = self.data_store.get_daily_summary(fresh_user_id)
+        self.assertEqual(len(initial_summary["meals_list"]), 0)
+        self.assertEqual(initial_summary["macros"]["calories"]["consumed"], 0.0)
+
+        # Explicitly log a meal through the system
+        today_str = date.today().isoformat()
+        self.data_store.log_meal({
+            "user_id": fresh_user_id,
+            "log_date": today_str,
+            "log_time": "12:00:00",
+            "meal_type": "lunch",
+            "food_name": "Grilled Chicken and Rice",
+            "calories": 450,
+            "protein_g": 40.0,
+            "carbs_g": 45.0,
+            "fat_g": 10.0,
+            "fiber_g": 5.0
+        })
+
+        summary = self.data_store.get_daily_summary(fresh_user_id)
         self.assertIn("macros", summary)
         self.assertIn("hydration", summary)
         self.assertIn("meals_list", summary)
         self.assertGreater(len(summary["meals_list"]), 0)
+        self.assertEqual(summary["macros"]["calories"]["consumed"], 450.0)
 
 
 if __name__ == "__main__":

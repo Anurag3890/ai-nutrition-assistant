@@ -595,6 +595,12 @@
         <div class="m-modal" id="mob-modal-log" style="display: none;">
             <div class="m-sheet">
                 <div style="font-size: 1.05rem; font-weight: 800; margin-bottom: 14px;">Log Meal to Diary</div>
+                <select class="m-field" id="m-inp-cat">
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner" selected>Dinner</option>
+                    <option value="Snacks">Snacks</option>
+                </select>
                 <input type="text" class="m-field" id="m-inp-name" placeholder="Food item (e.g. Pan-seared Salmon)" required>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <input type="number" class="m-field" id="m-inp-cal" placeholder="Calories (kcal)" required>
@@ -603,6 +609,34 @@
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
                     <button class="m-w-btn" onclick="closeMobLogModal()">Cancel</button>
                     <button class="btn-m-action" onclick="saveMobLogMeal()">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Modal Sheet -->
+        <div class="m-modal" id="mob-modal-profile" style="display: none;">
+            <div class="m-sheet">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <div class="m-avatar" id="mob-prof-avatar" style="width: 44px; height: 44px; font-size: 1.1rem;">AM</div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 800;" id="mob-prof-name">Alex Morgan</div>
+                        <div style="font-size: 0.75rem; color: #38bdf8; font-family: ui-monospace, monospace;" id="mob-prof-phone">📱 +1 555-0199</div>
+                        <div style="font-size: 0.72rem; color: #10b981; font-weight: 700; margin-top: 2px;" id="mob-prof-goal">● Fat Loss Deficit</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+                    <div style="background: #131b2e; padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase;">Caloric Target</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #fbbf24;" id="mob-prof-cal">1850 kcal</div>
+                    </div>
+                    <div style="background: #131b2e; padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase;">Protein Target</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #38bdf8;" id="mob-prof-prot">135g</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; gap: 8px;">
+                    <button class="btn-m-ghost" style="color: #f43f5e;" onclick="mobSignOut()">Sign Out / Switch</button>
+                    <button class="btn-m-action" onclick="closeMobProfileModal()">Close</button>
                 </div>
             </div>
         </div>
@@ -821,7 +855,26 @@
         function openMobLogModal() { document.getElementById("mob-modal-log").style.display = "flex"; }
         function closeMobLogModal() { document.getElementById("mob-modal-log").style.display = "none"; }
 
+        function openMobProfileModal() {
+            const u = getCur();
+            document.getElementById("mob-prof-avatar").textContent = u.avatar;
+            document.getElementById("mob-prof-name").textContent = u.name;
+            document.getElementById("mob-prof-phone").textContent = `📱 ${u.phone || 'Personal'}`;
+            document.getElementById("mob-prof-goal").textContent = `● ${u.goal}`;
+            document.getElementById("mob-prof-cal").textContent = `${u.targets.cal} kcal`;
+            document.getElementById("mob-prof-prot").textContent = `${u.targets.p}g`;
+            document.getElementById("mob-modal-profile").style.display = "flex";
+        }
+        function closeMobProfileModal() {
+            document.getElementById("mob-modal-profile").style.display = "none";
+        }
+        function mobSignOut() {
+            closeMobProfileModal();
+            openMobAuthModal();
+        }
+
         function saveMobLogMeal() {
+            const cat = document.getElementById("m-inp-cat").value;
             const name = document.getElementById("m-inp-name").value.trim();
             const cal = parseFloat(document.getElementById("m-inp-cal").value) || 0;
             const p = parseFloat(document.getElementById("m-inp-prot").value) || 0;
@@ -829,7 +882,7 @@
 
             const u = getCur();
             const meals = getMobMeals(u.id);
-            meals.push({ cat: "Dinner", title: name, cal, p, c: 20, f: 8 });
+            meals.push({ cat: cat || "Dinner", title: name, cal, p, c: 20, f: 8 });
             saveMobMeals(u.id, meals);
 
             renderMobile();

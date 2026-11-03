@@ -1,3 +1,5 @@
+> Historical design reference. See [README.md](README.md) and [AI_NUTRITION_BLUEPRINT.md](AI_NUTRITION_BLUEPRINT.md) for implemented features and verification limits.
+
 # AI Nutritionist Assistant - Project Architecture & Setup
 
 Welcome to the **AI Nutritionist Assistant** ecosystem. This project is structured to support both a **mobile app** and a **web application**, backed by a unified **AI & nutrition API backend** and central **data schemas**.

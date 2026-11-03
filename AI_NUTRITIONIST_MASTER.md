@@ -1,3 +1,5 @@
+> Historical design reference. See [README.md](README.md) and [AI_NUTRITION_BLUEPRINT.md](AI_NUTRITION_BLUEPRINT.md) for implemented features and verification limits.
+
 # AI Nutritionist Assistant: Master Data & Code Registry
 
 This dedicated master file organizes and catalogs all the **data schemas, storage definitions, and codebase modules** for both the **mobile app** and **website**.

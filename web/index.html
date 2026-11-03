@@ -1,524 +1,724 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriAI — Nutrition Tracking</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="app-layout">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f5f0" />
+    <title>NutriAI · A little more balance</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <section id="auth-screen" class="auth-layout" hidden>
+      <div class="auth-story">
+        <a class="wordmark" href="#">nutri<span>ai</span><i></i></a>
+        <div>
+          <p class="eyebrow">A LITTLE MORE BALANCE</p>
+          <h1>Good days start<br />with small habits.</h1>
+          <p>
+            A place for your meals, your progress, and a healthier relationship
+            with the everyday.
+          </p>
+          <div class="story-line"></div>
+          <p class="small">Your food. Your pace.</p>
+        </div>
+        <span class="small">Nutrition tracking, made personal.</span>
+      </div>
+      <main class="auth-panel">
+        <div class="auth-form-wrap">
+          <p class="eyebrow">WELCOME TO NUTRIAI</p>
+          <h2 id="auth-title">Welcome back.</h2>
+          <p id="auth-description" class="muted">
+            Sign in to pick up where you left off.
+          </p>
+          <div class="segmented" role="group" aria-label="Account access">
+            <button id="signin-tab" type="button" class="selected">
+              Sign in</button
+            ><button id="signup-tab" type="button">Create account</button>
+          </div>
+          <form id="auth-form" class="form-stack">
+            <label id="signup-name-wrap" hidden
+              >Your name<input
+                name="full_name"
+                id="auth-name"
+                autocomplete="name"
+                maxlength="100" /></label
+            ><label
+              >Phone number<input
+                name="phone"
+                id="auth-phone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="+91 98765 43210"
+                required
+              /><small>Include your country code.</small></label
+            ><label
+              >Password
+              <div class="password-field">
+                <input
+                  name="password"
+                  id="auth-password"
+                  type="password"
+                  autocomplete="current-password"
+                  maxlength="128"
+                  required
+                /><button
+                  type="button"
+                  class="text-button"
+                  id="show-password"
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+              </div>
+              <small id="password-hint" hidden
+                >At least 10 characters. A memorable phrase works well.</small
+              ></label
+            >
+            <p id="auth-error" class="form-error" role="alert"></p>
+            <button class="button primary full" id="auth-submit" type="submit">
+              Sign in
+            </button>
+          </form>
+          <button class="text-button recovery-link" id="forgot-password">
+            Forgot your password?
+          </button>
+          <p class="privacy-note">
+            Your records stay private to your account.<br />No pre-filled meals.
+            No made-up progress.
+          </p>
+        </div>
+      </main>
+    </section>
+    <div id="app-shell" class="app-shell" hidden>
+      <aside class="sidebar">
+        <a class="wordmark" href="#today">nutri<span>ai</span><i></i></a>
+        <p class="nav-label">YOUR EVERYDAY</p>
+        <nav aria-label="Main navigation">
+          <button data-view="today" aria-label="Today" class="nav-link active">
+            <span class="nav-icon" data-icon="sun"></span>Today</button
+          ><button data-view="progress" aria-label="Progress" class="nav-link">
+            <span class="nav-icon" data-icon="chart"></span>Progress</button
+          ><button data-view="coach" aria-label="Coach" class="nav-link">
+            <span class="nav-icon" data-icon="chat"></span>Coach</button
+          ><button data-view="settings" aria-label="Settings" class="nav-link">
+            <span class="nav-icon" data-icon="settings"></span>Settings
+          </button>
+        </nav>
+        <div class="sidebar-bottom">
+          <p>Small steps,<br /><strong>steadier days.</strong></p>
+          <button class="account-switch" id="account-button">
+            <span id="avatar" class="avatar">N</span
+            ><span
+              ><strong id="sidebar-name">Your account</strong
+              ><small>Profile & preferences</small></span
+            ><span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </aside>
+      <main id="content" class="main">
+        <header class="topbar">
+          <div>
+            <p id="page-eyebrow" class="eyebrow">YOUR DAILY PICTURE</p>
+            <h1 id="page-title">Today, at your pace.</h1>
+          </div>
+          <div class="top-actions">
+            <div class="date-control">
+              <button
+                id="previous-day"
+                class="icon-button"
+                aria-label="Previous day"
+              >
+                ‹</button
+              ><label class="sr-only" for="diary-date">Diary date</label
+              ><input id="diary-date" type="date" /><button
+                id="next-day"
+                class="icon-button"
+                aria-label="Next day"
+              >
+                ›
+              </button>
+            </div>
+            <button id="add-food" class="button primary">+ Log food</button>
+          </div>
+        </header>
+        <p id="page-error" class="page-error" role="alert" hidden></p>
+        <section id="view-today" class="view">
+          <div id="onboarding-banner" class="notice" hidden>
             <div>
-                <div class="logo">
-                    <div class="logo-gem">🥗</div>
-                    <div class="logo-text">Nutri<span>AI</span></div>
-                </div>
-                
-                <nav class="nav-menu">
-                    <button class="nav-item active" onclick="switchMainTab('dashboard')">
-                        <span>📊</span> Overview
-                    </button>
-                    <button class="nav-item" onclick="switchMainTab('oracle')">
-                        <span>🧠</span> Omni-AI Oracle
-                        <span class="nav-badge">NEW</span>
-                    </button>
-                    <button class="nav-item" onclick="switchMainTab('scanner')">
-                        <span>📸</span> AI Vision Scanner
-                    </button>
-                    <button class="nav-item" onclick="switchMainTab('patterns')">
-                        <span>⏳</span> Chrono-Patterns
-                    </button>
-                    <button class="nav-item" onclick="openWeeklyAuditModal()">
-                        <span>📑</span> Weekly Report
-                    </button>
-                </nav>
+              <strong>Make this space yours.</strong>
+              <p>Add a few details to personalize your profile and targets.</p>
             </div>
-
-            <!-- Active User Profile Card -->
-            <div class="user-badge-sidebar" onclick="openProfileModal()" title="Click to view and edit your profile">
-                <div class="avatar-sphere" id="side-avatar">--</div>
-                <div class="user-info-side">
-                    <div class="uname" id="side-username">Select Athlete</div>
-                    <div class="ugoal" id="side-usergoal">● Not Signed In</div>
-                </div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">⚙️</span>
-            </div>
-        </aside>
-
-        <!-- Main Content Viewport -->
-        <main class="main-content">
-            <!-- Top Header Bar -->
-            <header class="top-bar">
+            <button id="complete-profile" class="button secondary">
+              Set up profile
+            </button>
+          </div>
+          <div class="overview">
+            <article class="energy-card">
+              <div class="card-heading">
+                <span class="eyebrow">DAILY ENERGY</span
+                ><span id="energy-status" class="subtle-tag"
+                  >Ready when you are</span
+                >
+              </div>
+              <div class="energy-value">
+                <strong id="calories-consumed">0</strong
+                ><span>of <span id="calories-target">2,000</span> kcal</span>
+              </div>
+              <div class="progress-track"><div id="calorie-fill"></div></div>
+              <p id="calorie-remaining" class="muted">No meals logged yet.</p>
+            </article>
+            <article class="macro-card">
+              <div class="card-heading">
+                <span class="eyebrow">THE BUILDING BLOCKS</span
+                ><span class="small muted">grams</span>
+              </div>
+              <div id="macro-rows"></div>
+            </article>
+          </div>
+          <div class="daily-grid">
+            <section class="journal">
+              <div class="section-heading">
                 <div>
-                    <h1 id="page-main-heading">Nutritional Intelligence Dashboard</h1>
-                    <p class="subtitle">
-                        <span class="status-indicator"></span>
-                        <span id="active-user-subhead">Personal Nutrition Ledger</span>
-                    </p>
+                  <h2>On the menu</h2>
+                  <p id="meal-count" class="muted small">
+                    Your meals, one at a time.
+                  </p>
                 </div>
-                <div class="header-actions">
-                    <!-- Personalized user pill -->
-                    <div class="user-header-pill" onclick="openProfileModal()" style="cursor: pointer;" title="View your account details">
-                        <div class="header-user-avatar" id="top-avatar">--</div>
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 0.84rem; font-weight: 800; color: #ffffff;" id="top-username">Athlete</span>
-                            <span class="header-user-phone" id="top-phone">📱 Phone</span>
-                        </div>
-                    </div>
-                    <button class="btn-signout" onclick="openAuthModal()" title="Switch athlete or log in with credentials">Switch / Login</button>
-                    <a href="mobile.html" class="btn btn-secondary btn-sm" title="Open mobile smartphone interactive view">📱 Mobile View</a>
-                    <button class="btn btn-secondary btn-sm" onclick="addWater(250)">💧 +250ml</button>
-                    <button class="btn btn-primary btn-sm" onclick="openLogModal()">+ Log Food</button>
-                </div>
-            </header>
-
-            <!-- =========================================================================
-                 SECTION 1: DASHBOARD OVERVIEW
-                 ========================================================================= -->
-            <section class="main-view-section active-view" id="section-dashboard">
-                <!-- Macro Highlights Grid -->
-                <div class="macro-cards-grid">
-                    <!-- Calories Card -->
-                    <div class="card macro-card card-cal">
-                        <div class="card-header">
-                            <span class="card-title">Daily Energy Budget</span>
-                            <span class="macro-badge badge-cal" id="dash-cal-status">Ready to Track</span>
-                        </div>
-                        <div class="macro-values">
-                            <div class="primary-metric" id="dash-cal-consumed">0</div>
-                            <div class="secondary-metric">/ <span id="dash-cal-target">2000</span> kcal</div>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill fill-cal" id="dash-cal-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="macro-footer">
-                            <span>Remaining Budget</span>
-                            <strong id="dash-cal-rem">2000 kcal</strong>
-                        </div>
-                    </div>
-
-                    <!-- Protein Card -->
-                    <div class="card macro-card card-prot">
-                        <div class="card-header">
-                            <span class="card-title">Protein Allocation</span>
-                            <span class="macro-badge badge-prot">MPS Target</span>
-                        </div>
-                        <div class="macro-values">
-                            <div class="primary-metric" id="dash-p-consumed">0.0<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-p-target">140</span>g</div>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill fill-prot" id="dash-p-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="macro-footer">
-                            <span>Remaining</span>
-                            <strong id="dash-p-rem">140.0g</strong>
-                        </div>
-                    </div>
-
-                    <!-- Carbs Card -->
-                    <div class="card macro-card card-carbs">
-                        <div class="card-header">
-                            <span class="card-title">Carbohydrates</span>
-                            <span class="macro-badge badge-carbs">Glycogen</span>
-                        </div>
-                        <div class="macro-values">
-                            <div class="primary-metric" id="dash-c-consumed">0.0<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-c-target">200</span>g</div>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill fill-carbs" id="dash-c-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="macro-footer">
-                            <span>Remaining</span>
-                            <strong id="dash-c-rem">200.0g</strong>
-                        </div>
-                    </div>
-
-                    <!-- Fats Card -->
-                    <div class="card macro-card card-fats">
-                        <div class="card-header">
-                            <span class="card-title">Lipids & Fats</span>
-                            <span class="macro-badge badge-fats">Hormonal</span>
-                        </div>
-                        <div class="macro-values">
-                            <div class="primary-metric" id="dash-f-consumed">0.0<small>g</small></div>
-                            <div class="secondary-metric">/ <span id="dash-f-target">65</span>g</div>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill fill-fats" id="dash-f-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="macro-footer">
-                            <span>Remaining</span>
-                            <strong id="dash-f-rem">65.0g</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Split Layout -->
-                <div class="dashboard-split">
-                    <!-- Left: Meal Diary -->
-                    <div class="diary-section">
-                        <div class="section-header">
-                            <h2 style="font-size: 1.25rem; font-weight: 800;">Logged Meals & Diary</h2>
-                            <span class="macro-badge badge-cal" id="diary-meals-count">0 meals tracked</span>
-                        </div>
-
-                        <!-- Breakfast -->
-                        <div class="meal-slot-group">
-                            <div class="meal-slot-header">
-                                <h3>🌅 Breakfast</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-breakfast">0 kcal</span>
-                            </div>
-                            <div id="list-breakfast">
-                                <div class="empty-slot-btn" onclick="openLogModalFor('breakfast')">+ Tap to log Breakfast</div>
-                            </div>
-                        </div>
-
-                        <!-- Lunch -->
-                        <div class="meal-slot-group">
-                            <div class="meal-slot-header">
-                                <h3>☀️ Lunch</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-lunch">0 kcal</span>
-                            </div>
-                            <div id="list-lunch">
-                                <div class="empty-slot-btn" onclick="openLogModalFor('lunch')">+ Tap to log Lunch</div>
-                            </div>
-                        </div>
-
-                        <!-- Dinner -->
-                        <div class="meal-slot-group">
-                            <div class="meal-slot-header">
-                                <h3>🌙 Dinner</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-dinner">0 kcal</span>
-                            </div>
-                            <div id="list-dinner">
-                                <div class="empty-slot-btn" onclick="openLogModalFor('dinner')">+ Tap to log Dinner</div>
-                            </div>
-                        </div>
-
-                        <!-- Snacks -->
-                        <div class="meal-slot-group">
-                            <div class="meal-slot-header">
-                                <h3>🍎 Snacks & Peri-Workout</h3>
-                                <span class="meal-slot-subtotal" id="subtotal-snacks">0 kcal</span>
-                            </div>
-                            <div id="list-snacks">
-                                <div class="empty-slot-btn" onclick="openLogModalFor('snacks')">+ Tap to log Snack</div>
-                            </div>
-                        </div>
-
-                        <!-- Hydration Glass Card -->
-                        <div class="card water-card-glass">
-                            <div class="water-row">
-                                <div>
-                                    <h3 style="font-size: 1rem; font-weight: 700;">💧 Cellular Hydration Index</h3>
-                                    <p style="font-size: 0.78rem; color: var(--text-secondary);">Recorded fluid intake</p>
-                                </div>
-                                <div class="water-amount">
-                                    <span id="dash-water-num">0</span> / <span id="dash-water-target">2,500</span> ml
-                                </div>
-                            </div>
-                            <div class="progress-track" style="margin-bottom: 14px;">
-                                <div class="progress-fill fill-water" id="dash-water-fill" style="width: 0%;"></div>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-secondary btn-sm" onclick="addWater(250)">+250 ml (Cup)</button>
-                                <button class="btn btn-secondary btn-sm" onclick="addWater(500)">+500 ml (Flask)</button>
-                                <button class="btn btn-secondary btn-sm" onclick="addWater(750)">+750 ml</button>
-                                <button class="btn btn-ghost btn-sm" onclick="resetWater()">Reset</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Quick Coach & Micronutrients -->
-                    <div>
-                        <!-- Quick Assistant Widget -->
-                        <div class="card" style="margin-bottom: 24px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-size: 1.4rem;">🧠</span>
-                                    <div>
-                                        <h4 style="font-size: 0.95rem; font-weight: 800;">Real-Time Meal Feedback</h4>
-                                        <span style="font-size: 0.72rem; color: var(--accent-emerald); font-weight: 700;">● Continuous Metabolic Audit</span>
-                                    </div>
-                                </div>
-                                <button class="btn btn-secondary btn-sm" onclick="switchMainTab('oracle')">Ask Oracle →</button>
-                            </div>
-                            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; font-size: 0.88rem; line-height: 1.5; color: #cbd5e1;" id="coach-live-summary">
-                                Alex, through breakfast and lunch you've secured <strong>85.9g of protein</strong>. You have <strong>49.1g remaining</strong> for dinner. A 200g salmon fillet or tofu bowl will comfortably secure your protein goal inside your 500 kcal deficit!
-                            </div>
-                        </div>
-
-                        <div class="card"><h3>Nutrition data coverage</h3><p>Micronutrient totals are unavailable for manual meal entries. No values are estimated.</p></div>
-                    </div>
-                </div>
+                <button id="photo-food" class="text-button">
+                  <span data-icon="camera"></span>Add from photo
+                </button>
+              </div>
+              <div id="meal-groups" class="meal-groups"></div>
+              <details class="nutrient-details">
+                <summary>Recorded micronutrients</summary>
+                <div id="micronutrient-totals"></div>
+                <p class="small muted">
+                  Only foods with nutrient data contribute. These are recorded
+                  amounts, not a complete assessment of your intake.
+                </p>
+              </details>
+              <p class="small muted source-note">
+                Nutrition values are estimates. Portions and preparation can
+                make a difference.
+              </p>
             </section>
-
-            <!-- =========================================================================
-                 SECTION 2: DEDICATED OMNI-AI HEALTH & NUTRITION ORACLE
-                 ========================================================================= -->
-            <section class="main-view-section" id="section-oracle">
-                <div class="oracle-container">
-                    <!-- Oracle Hero Banner -->
-                    <div class="oracle-hero">
-                        <div class="oracle-hero-left">
-                            <h2>Omni-AI Health & Nutrition Oracle</h2>
-                            <p>Ask anything about human physiology, biohacking, fasting regimens, sports supplements, workout splits, recipes, and metabolic health.</p>
-                        </div>
-                        <span class="oracle-badge-pill">Local reference guidance</span>
-                    </div>
-
-                    <!-- Category Filter Chips -->
-                    <div class="oracle-categories">
-                        <button class="cat-chip active" onclick="filterOracleCategory('all', this)">All Domains</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('biohacking', this)">🧬 Biohacking & Longevity</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('supplements', this)">💊 Supplements & Ergogenics</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('nutrition', this)">🥗 Nutrition & Macros</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('hypertrophy', this)">🏋️‍♂️ Hypertrophy & Workouts</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('gut', this)">🦠 Gut Microbiome</button>
-                        <button class="cat-chip" onclick="filterOracleCategory('fasting', this)">⏱️ Fasting Protocols</button>
-                    </div>
-
-                    <!-- Search Input Box -->
-                    <form class="oracle-search-box" onsubmit="submitOracleQuery(event)">
-                        <input type="text" class="oracle-search-input" id="oracle-input" placeholder="Ask any question... (e.g., 'What is the optimal creatine dose?', 'How does 16:8 fasting trigger autophagy?', 'Best pre-workout meal')" required>
-                        <button type="submit" class="btn-oracle-ask">Consult Oracle →</button>
-                    </form>
-
-                    <!-- Oracle Live Answer Card -->
-                    <div class="oracle-result-card" id="oracle-result-box">
-                        <div class="oracle-result-header">
-                            <div>
-                                <span class="oracle-topic-category" id="oracle-ans-cat">Category</span>
-                                <h3 class="oracle-topic-title" id="oracle-ans-topic">Topic Title</h3>
-                            </div>
-                            <button class="btn btn-secondary btn-sm" onclick="copyOracleAnswer()">Copy Response</button>
-                        </div>
-
-                        <!-- Content Grid: Summary & Mechanism -->
-                        <div class="oracle-content-grid">
-                            <div class="oracle-subcard">
-                                <h4><span>💡</span> Summary & Clinical Overview</h4>
-                                <p id="oracle-ans-summary"></p>
-                            </div>
-                            <div class="oracle-subcard">
-                                <h4><span>🔬</span> Biochemical Mechanism</h4>
-                                <p id="oracle-ans-mechanism"></p>
-                            </div>
-                        </div>
-
-                        <!-- Actionable Protocol -->
-                        <div class="oracle-subcard" style="margin-bottom: 20px;">
-                            <h4><span>📋</span> Actionable Evidence-Based Protocol</h4>
-                            <ul class="protocol-list" id="oracle-ans-protocol"></ul>
-                        </div>
-
-                        <!-- Clinical Citation -->
-                        <div class="clinical-badge-row">
-                            <span style="font-size: 1.1rem;">📑</span>
-                            <span><strong>Clinical Evidence / Study:</strong> <span id="oracle-ans-evidence"></span></span>
-                        </div>
-                    </div>
-
-                    <!-- Pre-Loaded Knowledge Explorer Grid -->
-                    <h3 style="font-size: 1.1rem; font-weight: 800; margin-top: 10px;">Explore Popular Clinical Questions</h3>
-                    <div class="oracle-presets-grid">
-                        <div class="preset-card" onclick="askPresetOracle('How does intermittent fasting trigger autophagy?')">
-                            <div class="preset-icon">⏱️</div>
-                            <h4>Intermittent Fasting & Autophagy</h4>
-                            <p>How 16:8 and OMAD activate AMPK, deplete glycogen, and stimulate cellular recycling.</p>
-                        </div>
-                        <div class="preset-card" onclick="askPresetOracle('What is the optimal creatine monohydrate protocol?')">
-                            <div class="preset-icon">💊</div>
-                            <h4>Creatine & Intracellular ATP</h4>
-                            <p>ISSN position on creatine loading vs 5g maintenance for strength and cognitive function.</p>
-                        </div>
-                        <div class="preset-card" onclick="askPresetOracle('How do sauna and cold plunge impact longevity?')">
-                            <div class="preset-icon">🧬</div>
-                            <h4>Hormetic Biohacking & Longevity</h4>
-                            <p>Heat shock proteins (HSP70), norepinephrine spikes, and brown adipose tissue.</p>
-                        </div>
-                        <div class="preset-card" onclick="askPresetOracle('How to optimize the gut microbiome and reduce bloating?')">
-                            <div class="preset-icon">🦠</div>
-                            <h4>Gut Microbiome & Fermented Foods</h4>
-                            <p>Short-chain fatty acids (SCFAs), butyrate, and prebiotic plant diversity protocols.</p>
-                        </div>
-                        <div class="preset-card" onclick="askPresetOracle('What is Zone 2 cardio and how does it improve mitochondrial density?')">
-                            <div class="preset-icon">🏃‍♂️</div>
-                            <h4>Zone 2 Training & Fat Oxidation</h4>
-                            <p>Lactate thresholds, mitochondrial biogenesis, and aerobic base construction.</p>
-                        </div>
-                        <div class="preset-card" onclick="askPresetOracle('What is the best macro split for metabolic health in ketosis?')">
-                            <div class="preset-icon">🥑</div>
-                            <h4>Ketogenic Adaptation & Insulin</h4>
-                            <p>Beta-hydroxybutyrate, glucose blunting, and electrolyte management.</p>
-                        </div>
-                    </div>
+            <aside class="daily-aside">
+              <article class="water-card">
+                <div class="card-heading">
+                  <span class="eyebrow">A MOMENT TO HYDRATE</span
+                  ><span data-icon="water"></span>
                 </div>
+                <h2>
+                  <span id="water-total">0</span
+                  ><small> / <span id="water-target">2,500</span> ml</small>
+                </h2>
+                <div
+                  id="water-glasses"
+                  class="water-glasses"
+                  aria-hidden="true"
+                ></div>
+                <div class="water-actions">
+                  <button class="button secondary" data-water="250">
+                    + 250 ml</button
+                  ><button class="button quiet" data-water="500">
+                    + 500 ml
+                  </button>
+                </div>
+                <button id="water-reset" class="text-button small">
+                  Reset this day
+                </button>
+              </article>
+              <article class="checkin-card">
+                <p class="eyebrow">BEYOND THE NUMBERS</p>
+                <h3>How are you feeling?</h3>
+                <p class="muted small">
+                  A quick check-in helps you see the bigger picture over time.
+                </p>
+                <p id="checkin-summary" class="small"></p>
+                <button id="checkin-button" class="button secondary full">
+                  Daily check-in <span aria-hidden="true">↗</span>
+                </button>
+              </article>
+            </aside>
+          </div>
+        </section>
+        <section id="view-progress" class="view" hidden>
+          <div class="section-heading">
+            <div>
+              <h2>A view of the last two weeks.</h2>
+              <p class="muted">
+                Look for patterns, without chasing a perfect day.
+              </p>
+            </div>
+            <button id="refresh-progress" class="button secondary">
+              Refresh
+            </button>
+          </div>
+          <div id="progress-stats" class="stats-row"></div>
+          <article class="chart-card">
+            <div class="section-heading">
+              <h3>Energy logged</h3>
+              <span class="small muted">kcal per day</span>
+            </div>
+            <div
+              id="calorie-chart"
+              class="bar-chart"
+              role="img"
+              aria-label="Calories logged over fourteen days"
+            ></div>
+            <p class="small muted">
+              A dash means no meals were logged. A partial day may not represent
+              your full intake.
+            </p>
+          </article>
+          <article class="chart-card">
+            <h3>Weight check-ins</h3>
+            <div id="weight-history"></div>
+          </article>
+          <p class="small muted">
+            Trends describe your records. They do not predict future intake or
+            diagnose health conditions.
+          </p>
+        </section>
+        <section id="view-coach" class="view coach-view" hidden>
+          <div class="coach-intro">
+            <div class="coach-mark" aria-hidden="true">n.</div>
+            <div>
+              <h2>A little guidance, when you need it.</h2>
+              <p id="coach-mode" class="muted">
+                Your daily summary, with context.
+              </p>
+            </div>
+            <button id="clear-chat" class="text-button">
+              Clear conversation
+            </button>
+          </div>
+          <div
+            id="chat-history"
+            class="chat-history"
+            role="log"
+            aria-label="Conversation"
+            aria-live="polite"
+          ></div>
+          <form id="chat-form" class="chat-composer">
+            <label class="sr-only" for="chat-input">Message</label
+            ><textarea
+              id="chat-input"
+              rows="2"
+              maxlength="4000"
+              placeholder="Ask about a meal, your targets, or building a routine…"
+              required
+            ></textarea
+            ><button type="submit" class="button primary">Send ↑</button>
+          </form>
+          <p id="coach-privacy" class="small muted">
+            General nutrition information, not medical care.
+          </p>
+        </section>
+        <section id="view-settings" class="view" hidden>
+          <div class="settings-grid">
+            <section class="settings-section">
+              <p class="eyebrow">THE BASICS</p>
+              <h2>Your profile</h2>
+              <form id="profile-form" class="form-grid">
+                <label class="wide"
+                  >Full name<input
+                    name="full_name"
+                    required
+                    maxlength="100" /></label
+                ><label
+                  >Age<input
+                    name="age"
+                    type="number"
+                    min="18"
+                    max="120"
+                    required /></label
+                ><label
+                  >Sex for energy estimates<select name="sex">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select></label
+                ><label
+                  >Height · cm<input
+                    name="height_cm"
+                    type="number"
+                    min="80"
+                    max="250"
+                    step="0.1"
+                    required /></label
+                ><label
+                  >Current weight · kg<input
+                    name="current_weight_kg"
+                    type="number"
+                    min="25"
+                    max="400"
+                    step="0.1"
+                    required /></label
+                ><label
+                  >Target weight · kg<input
+                    name="target_weight_kg"
+                    type="number"
+                    min="25"
+                    max="400"
+                    step="0.1"
+                    required /></label
+                ><label
+                  >Activity<select name="activity_level">
+                    <option value="sedentary">Mostly seated</option>
+                    <option value="lightly_active">Lightly active</option>
+                    <option value="moderately_active">Moderately active</option>
+                    <option value="very_active">Very active</option>
+                    <option value="extra_active">Highly active</option>
+                  </select></label
+                ><label
+                  >Focus<select name="primary_goal">
+                    <option value="maintenance">Maintain balance</option>
+                    <option value="fat_loss">Weight loss</option>
+                    <option value="muscle_gain">Build muscle</option>
+                    <option value="athletic_performance">Performance</option>
+                    <option value="metabolic_health">Metabolic health</option>
+                    <option value="general_wellness">General wellbeing</option>
+                  </select></label
+                ><label
+                  >Eating preference<select name="dietary_preference">
+                    <option value="omnivore">No restriction</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="pescatarian">Pescatarian</option>
+                    <option value="mediterranean">Mediterranean</option>
+                    <option value="low_carb">Lower carbohydrate</option>
+                    <option value="keto">Keto</option>
+                    <option value="paleo">Paleo</option>
+                    <option value="custom">Other</option>
+                  </select></label
+                ><label class="wide"
+                  >Allergies<input
+                    name="allergies"
+                    maxlength="500"
+                    placeholder="For example, peanuts or shellfish" /></label
+                ><label class="wide"
+                  >Health context · optional<textarea
+                    name="medical_conditions"
+                    rows="2"
+                    maxlength="500"
+                    placeholder="Anything you want to keep in your private profile"
+                  ></textarea
+                  ><small
+                    >Not sent to the optional coach provider.</small
+                  ></label
+                ><label class="wide"
+                  >Timezone<input
+                    name="timezone"
+                    required
+                    placeholder="Asia/Kolkata"
+                  /><small
+                    >IANA name, such as Asia/Kolkata or Europe/London.</small
+                  ></label
+                >
+                <div class="wide form-footer">
+                  <button class="button primary" type="submit">
+                    Save profile</button
+                  ><span id="profile-status" class="small" role="status"></span>
+                </div>
+              </form>
             </section>
-
-            <!-- =========================================================================
-                 SECTION 3: AI VISION SCANNER VIEW
-                 ========================================================================= -->
-            <section class="main-view-section" id="section-scanner"><h2>Food photo recognition</h2><p>Photo recognition is not configured. Use + Log Food to enter a food and confirm its calories and macros.</p></section>
-
-            <!-- =========================================================================
-                 SECTION 4: CHRONO-NUTRITION (RNN/LSTM)
-                 ========================================================================= -->
-            <section class="main-view-section" id="section-patterns"><h2>Your eating history</h2><p>Open Weekly Audit to see averages calculated from your logged meals. Forecasting is unavailable until a trained model is configured.</p></section>
-        </main>
-    </div>
-
-    <!-- =========================================================================
-         USER AUTHENTICATION PORTAL (PHONE NUMBER, NAME, PASSWORD)
-         ========================================================================= -->
-    <div class="auth-modal-overlay" id="auth-modal" style="display: none;">
-        <div class="auth-modal-card" style="width: 520px; max-width: 95vw;">
-            <div class="auth-header">
-                <div style="font-size: 2.2rem; margin-bottom: 8px;">🥗</div>
-                <h3 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">NutriAI Personal Gateway</h3>
-                <p>Personalized Nutrition Tracking Assistant</p>
-            </div>
-
-            <!-- Feedback Alert -->
-            <div id="auth-alert" class="auth-feedback-alert"></div>
-
-            <!-- Tabs: Sign In / Create Account -->
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">Sign In</button>
-                <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">Create Account</button>
-            </div>
-
-            <!-- TAB 1: SIGN IN (Phone Number + Password) -->
-            <div id="pane-signin">
-                <form onsubmit="handleLoginSubmit(event)">
-                    <label class="input-label">📱 Phone Number</label>
-                    <input type="text" class="input-field-custom" id="login-phone" placeholder="e.g. +1 555-0199" required autocomplete="tel">
-
-                    <label class="input-label">🔑 Specific Password</label>
-                    <input type="password" class="input-field-custom" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 0.95rem; margin-top: 6px;">Sign In to Personal Dashboard</button>
+            <div>
+              <section class="settings-section">
+                <p class="eyebrow">SET YOUR OWN PACE</p>
+                <h2>Daily targets</h2>
+                <p class="small muted">
+                  Targets are editable goals, not medical prescriptions.
+                </p>
+                <form id="targets-form" class="form-grid">
+                  <label
+                    >Energy · kcal<input
+                      name="daily_calorie_target"
+                      type="number"
+                      min="800"
+                      max="10000"
+                      required /></label
+                  ><label
+                    >Protein · g<input
+                      name="daily_protein_target_g"
+                      type="number"
+                      min="0"
+                      max="500"
+                      step="0.1"
+                      required /></label
+                  ><label
+                    >Carbohydrate · g<input
+                      name="daily_carbs_target_g"
+                      type="number"
+                      min="0"
+                      max="1500"
+                      step="0.1"
+                      required /></label
+                  ><label
+                    >Fat · g<input
+                      name="daily_fat_target_g"
+                      type="number"
+                      min="0"
+                      max="500"
+                      step="0.1"
+                      required /></label
+                  ><label class="wide"
+                    >Water · ml<input
+                      name="daily_water_target_ml"
+                      type="number"
+                      min="250"
+                      max="10000"
+                      required
+                  /></label>
+                  <div class="wide form-footer">
+                    <button
+                      class="button secondary"
+                      id="calculate-targets"
+                      type="button"
+                    >
+                      Estimate from profile</button
+                    ><button class="button primary" type="submit">
+                      Save targets
+                    </button>
+                  </div>
                 </form>
-
-            </div>
-
-            <!-- TAB 2: REGISTER (Full Name + Phone Number + Specific Password + Target) -->
-            <div id="pane-register" style="display: none;">
-                <form onsubmit="handleRegisterSubmit(event)">
-                    <label class="input-label">👤 Full Name</label>
-                    <input type="text" class="input-field-custom" id="reg-name" placeholder="e.g. Anurag Anand" required autocomplete="name">
-
-                    <label class="input-label">📱 Phone Number</label>
-                    <input type="text" class="input-field-custom" id="reg-phone" placeholder="e.g. +1 555-0123" required autocomplete="tel">
-
-                    <label class="input-label">🔑 Specific Password</label>
-                    <input type="password" class="input-field-custom" id="reg-password" placeholder="Create your account password" required autocomplete="new-password">
-
-                    <label class="input-label">🎯 Primary Health Goal</label>
-                    <select class="input-field-custom" id="reg-goal" onchange="autoCalculateMacroTargets()" required>
-                        <option value="fat_loss">Fat Loss & Caloric Deficit</option>
-                        <option value="muscle_gain">Muscle Hypertrophy & Bulk</option>
-                        <option value="metabolic_health">Metabolic Health & Ketosis</option>
-                        <option value="athletic_performance">Athletic Endurance & Performance</option>
-                        <option value="maintenance">Balanced Maintenance</option>
-                    </select>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label class="input-label">🔥 Daily Calorie Target</label>
-                            <input type="number" class="input-field-custom" id="reg-cal" value="2000" required>
-                        </div>
-                        <div>
-                            <label class="input-label">🥩 Daily Protein Goal (g)</label>
-                            <input type="number" class="input-field-custom" id="reg-prot" value="140" required>
-                        </div>
-                    </div>
-
-                    <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 14px; line-height: 1.4;">
-                        🔒 <strong>Zero Prepopulation:</strong> Your dashboard starts completely clean (0 kcal consumed, 0 ml water) until you enter your meals.
-                    </p>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 0.95rem;">Create Account & Enter Dashboard</button>
-                </form>
-            </div>
-
-            <div style="display: flex; justify-content: center; margin-top: 16px;" id="auth-close-bar">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="closeAuthModal()" id="btn-cancel-auth" style="display: none;">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- =========================================================================
-         USER PROFILE & ACCOUNT DETAILS MODAL
-         ========================================================================= -->
-    <div class="auth-modal-overlay" id="profile-modal" style="display: none;">
-        <div class="auth-modal-card" style="width: 480px; max-width: 95vw;">
-            <div class="auth-header">
-                <h3>Athlete Profile & Account</h3>
-                <p>Personal identity & active macronutrient targets</p>
-            </div>
-            <div id="profile-card-content">
-                <!-- Injected dynamically via JS -->
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
-                <button type="button" class="btn-signout" onclick="signOutUser()">Log Out / Switch User</button>
-                <button type="button" class="btn btn-primary" onclick="closeProfileModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Food Modal -->
-    <div class="auth-modal-overlay" id="log-modal" style="display: none;">
-        <div class="auth-modal-card">
-            <div class="auth-header">
-                <h3>Log Meal Item</h3>
-                <p id="log-modal-subtitle">Add to your active daily nutrition ledger</p>
-            </div>
-            <form onsubmit="handleSaveFoodLog(event)">
-                <select class="input-field-custom" id="log-meal-category" required>
-                    <option value="breakfast">Breakfast</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="dinner" selected>Dinner</option>
-                    <option value="snacks">Snack / Pre-Workout</option>
-                </select>
-                <input type="text" class="input-field-custom" id="log-food-name" placeholder="Food name (e.g. Atlantic Salmon with Asparagus)" required>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="number" class="input-field-custom" id="log-cal" placeholder="Calories (kcal)" required>
-                    <input type="number" step="0.1" class="input-field-custom" id="log-prot" placeholder="Protein (g)" required>
+              </section>
+              <section class="settings-section security-section">
+                <p class="eyebrow">YOURS TO CONTROL</p>
+                <h2>Account & privacy</h2>
+                <p id="phone-status" class="small"></p>
+                <div class="security-actions">
+                  <button class="button secondary" id="verify-phone">
+                    Verify phone</button
+                  ><button class="button secondary" id="change-password">
+                    Change password</button
+                  ><button class="button secondary" id="recovery-codes">
+                    Recovery codes</button
+                  ><button class="button secondary" id="export-data">
+                    Export my data</button
+                  ><button class="button secondary" id="sign-out">
+                    Sign out</button
+                  ><button class="text-button danger" id="delete-account">
+                    Delete account
+                  </button>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="number" step="0.1" class="input-field-custom" id="log-carbs" placeholder="Carbs (g)" required>
-                    <input type="number" step="0.1" class="input-field-custom" id="log-fat" placeholder="Fat (g)" required>
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeLogModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save to Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Weekly Report Report Modal -->
-    <div class="auth-modal-overlay" id="audit-modal" style="display: none;">
-        <div class="auth-modal-card" style="width: 650px; max-height: 85vh; overflow-y: auto;">
-            <div class="auth-header" style="text-align: left;">
-                <h3>📑 Weekly Nutrition Report</h3>
-                <p id="audit-subtitle">Summary of your recorded meals and hydration</p>
+              </section>
             </div>
-            <div id="audit-report-content" style="font-size: 0.9rem; line-height: 1.6; color: #cbd5e1;"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button class="btn btn-primary" onclick="closeWeeklyAuditModal()">Done</button>
-            </div>
-        </div>
+          </div>
+        </section>
+        <footer class="app-footer">
+          <span>Keep showing up for yourself.</span
+          ><span>NutriAI · One day at a time</span>
+        </footer>
+      </main>
     </div>
-
-    <script src="app.js"></script>
-</body>
+    <div id="loading-screen" class="loading-screen">
+      <span class="wordmark">nutri<span>ai</span></span>
+      <p>Getting things ready…</p>
+    </div>
+    <dialog id="meal-dialog" class="modal">
+      <form id="meal-form">
+        <header class="modal-header">
+          <div>
+            <p class="eyebrow">THE EVERYDAY JOURNAL</p>
+            <h2 id="meal-dialog-title">Log a meal</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            data-close
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </header>
+        <div class="meal-tools">
+          <label
+            >Search foods<input
+              id="food-query"
+              type="search"
+              placeholder="Try oats, chicken, or rice" /></label
+          ><button class="button secondary" id="food-search" type="button">
+            Search
+          </button>
+        </div>
+        <div id="food-results" class="food-results"></div>
+        <p id="food-source" class="small muted"></p>
+        <div class="form-grid">
+          <label class="wide"
+            >Food or meal<input
+              name="food_name"
+              required
+              maxlength="200"
+              placeholder="What did you eat?" /></label
+          ><label
+            >Meal<select name="meal_type">
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="afternoon_snack">Snack</option>
+            </select></label
+          ><label>Date<input name="log_date" type="date" required /></label
+          ><label
+            >Calories · kcal<input
+              name="calories"
+              type="number"
+              step="0.1"
+              min="0"
+              max="10000"
+              required /></label
+          ><label
+            >Protein · g<input
+              name="protein_g"
+              type="number"
+              step="0.1"
+              min="0"
+              max="1000"
+              required
+              value="0" /></label
+          ><label
+            >Carbohydrate · g<input
+              name="carbs_g"
+              type="number"
+              step="0.1"
+              min="0"
+              max="2000"
+              required
+              value="0" /></label
+          ><label
+            >Fat · g<input
+              name="fat_g"
+              type="number"
+              step="0.1"
+              min="0"
+              max="1000"
+              required
+              value="0" /></label
+          ><label
+            >Fiber · g<input
+              name="fiber_g"
+              type="number"
+              step="0.1"
+              min="0"
+              max="500"
+              value="0" /></label
+          ><label
+            >Serving weight · g<input
+              id="food-portion"
+              type="number"
+              min="1"
+              max="5000"
+              step="1"
+              value="100"
+            /><small>Scales a selected food search result.</small></label
+          >
+        </div>
+        <p id="meal-error" class="form-error" role="alert"></p>
+        <footer class="modal-footer">
+          <button class="button quiet" data-close type="button">Cancel</button
+          ><button class="button primary" type="submit">Save meal</button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="checkin-dialog" class="modal compact">
+      <form id="checkin-form">
+        <header class="modal-header">
+          <div>
+            <p class="eyebrow">A QUICK CHECK-IN</p>
+            <h2>How was your day?</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            data-close
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </header>
+        <div class="form-grid">
+          <label
+            >Weight · kg<input
+              name="weight_kg"
+              type="number"
+              min="25"
+              max="400"
+              step="0.1" /></label
+          ><label
+            >Sleep · hours<input
+              name="sleep_hours"
+              type="number"
+              min="0"
+              max="24"
+              step="0.5" /></label
+          ><label
+            >Energy · 1 to 10<input
+              name="energy_level"
+              type="number"
+              min="1"
+              max="10" /></label
+          ><label
+            >Sleep quality · 1 to 10<input
+              name="sleep_quality"
+              type="number"
+              min="1"
+              max="10" /></label
+          ><label class="wide"
+            >A note to yourself<textarea
+              name="notes"
+              maxlength="2000"
+              rows="3"
+              placeholder="What felt good? What could feel better?"
+            ></textarea>
+          </label>
+        </div>
+        <p id="checkin-error" class="form-error" role="alert"></p>
+        <footer class="modal-footer">
+          <button type="submit" class="button primary">Save check-in</button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="action-dialog" class="modal compact">
+      <header class="modal-header">
+        <h2 id="action-title"></h2>
+        <button type="button" class="icon-button" data-close aria-label="Close">
+          ×
+        </button>
+      </header>
+      <div id="action-body"></div>
+    </dialog>
+    <dialog id="photo-dialog" class="modal compact">
+      <header class="modal-header">
+        <div>
+          <p class="eyebrow">START WITH A PHOTO</p>
+          <h2>A closer look at your plate.</h2>
+        </div>
+        <button type="button" class="icon-button" data-close aria-label="Close">
+          ×
+        </button>
+      </header>
+      <p id="photo-description" class="muted">
+        Choose a photo, then confirm the food, portions, and nutrition before
+        saving.
+      </p>
+      <form id="photo-form" class="form-stack">
+        <label class="photo-drop"
+          >Meal photo<input
+            id="photo-file"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            required /></label
+        ><img id="photo-preview" alt="Selected meal" hidden />
+        <p class="small muted">
+          When enabled, the photo is sent to the configured AI provider.
+          Location metadata is removed. Photos are not saved by this app.
+        </p>
+        <p id="photo-error" class="form-error" role="alert"></p>
+        <button class="button primary" type="submit">Analyze photo</button>
+      </form>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </body>
 </html>

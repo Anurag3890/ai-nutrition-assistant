@@ -1,15 +1,7 @@
-"""
-Module 7: Backend & REST API
-============================
-Responsibilities:
-- FastAPI backend integrating all ML models (CNN, ANN, RNN/LSTM, GenAI Coach, Database)
-- Complete REST endpoints for:
-    1. Food image upload & classification (CNN + Nutrition Mapping + ANN Evaluation)
-    2. Eating pattern & time-series forecast (RNN/LSTM)
-    3. GenAI Nutrition Coach chat & weekly performance report
-    4. Meal history, hydration, and biometric tracking (Database)
-- Request/response validation, error handling & OpenAPI docs
-- Dual runtime: FastAPI (with Uvicorn) + Built-in Python HTTP server fallback
+"""Production FastAPI entrypoint and legacy educational pipeline helpers.
+
+The authenticated API is created in backend.api. Legacy CNN/ANN/RNN helpers below
+are retained for educational tests and are not exposed as production predictions.
 """
 
 import os

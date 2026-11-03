@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriAI — High-Performance Clinical Nutrition & Health Intelligence</title>
+    <title>NutriAI — Nutrition Tracking</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,7 @@
                         <span>⏳</span> Chrono-Patterns
                     </button>
                     <button class="nav-item" onclick="openWeeklyAuditModal()">
-                        <span>📑</span> Clinical Audit
+                        <span>📑</span> Weekly Report
                     </button>
                 </nav>
             </div>
@@ -218,7 +218,7 @@
                             <div class="water-row">
                                 <div>
                                     <h3 style="font-size: 1rem; font-weight: 700;">💧 Cellular Hydration Index</h3>
-                                    <p style="font-size: 0.78rem; color: var(--text-secondary);">Optimal electrolyte-fluid homeostasis</p>
+                                    <p style="font-size: 0.78rem; color: var(--text-secondary);">Recorded fluid intake</p>
                                 </div>
                                 <div class="water-amount">
                                     <span id="dash-water-num">0</span> / <span id="dash-water-target">2,500</span> ml
@@ -255,28 +255,7 @@
                             </div>
                         </div>
 
-                        <!-- Micronutrient Matrix -->
-                        <div class="card">
-                            <h3 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 14px;">Cellular Micronutrient Status</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Potassium</div>
-                                    <div style="font-size: 0.95rem; font-weight: 800; font-family: var(--font-mono); margin-top: 2px;">1,145 / 3,400 mg</div>
-                                </div>
-                                <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Calcium</div>
-                                    <div style="font-size: 0.95rem; font-weight: 800; font-family: var(--font-mono); margin-top: 2px;">387 / 1,000 mg</div>
-                                </div>
-                                <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Iron</div>
-                                    <div style="font-size: 0.95rem; font-weight: 800; font-family: var(--font-mono); margin-top: 2px;">8.2 / 18 mg</div>
-                                </div>
-                                <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Vitamin C</div>
-                                    <div style="font-size: 0.95rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald); margin-top: 2px;">98.9 / 90 mg (110%)</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="card"><h3>Nutrition data coverage</h3><p>Micronutrient totals are unavailable for manual meal entries. No values are estimated.</p></div>
                     </div>
                 </div>
             </section>
@@ -292,7 +271,7 @@
                             <h2>Omni-AI Health & Nutrition Oracle</h2>
                             <p>Ask anything about human physiology, biohacking, fasting regimens, sports supplements, workout splits, recipes, and metabolic health.</p>
                         </div>
-                        <span class="oracle-badge-pill">Clinical Intelligence Model v2.4</span>
+                        <span class="oracle-badge-pill">Local reference guidance</span>
                     </div>
 
                     <!-- Category Filter Chips -->
@@ -387,97 +366,12 @@
             <!-- =========================================================================
                  SECTION 3: AI VISION SCANNER VIEW
                  ========================================================================= -->
-            <section class="main-view-section" id="section-scanner">
-                <div class="scanner-view-container">
-                    <!-- Left: Camera Reticle Frame -->
-                    <div class="reticle-lens-frame" onclick="simulateLensCamera()">
-                        <div class="laser-scan-line"></div>
-                        <div class="lens-corner tl"></div>
-                        <div class="lens-corner tr"></div>
-                        <div class="lens-corner bl"></div>
-                        <div class="lens-corner br"></div>
-                        <div style="font-size: 3rem; margin-bottom: 12px;">📸</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 800; color: #ffffff;">AI Food Vision Reticle</h4>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Click to simulate neural plate camera scan</p>
-                    </div>
-
-                    <!-- Right: Results Card -->
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                            <div>
-                                <span class="macro-badge badge-prot">MobileNetV2 Transfer Model</span>
-                                <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 4px;" id="scanned-dish-name">Grilled Salmon with Asparagus</h3>
-                                <div style="font-size: 0.8rem; color: var(--accent-emerald); font-weight: 700;" id="scanned-conf-num">95.4% Confidence Score</div>
-                            </div>
-                            <div class="macro-badge badge-cal" id="scanned-ann-pill">Adequate-Protein Power</div>
-                        </div>
-
-                        <!-- Nutrition Matrix -->
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">Energy</div>
-                                <strong style="font-size: 1.15rem; font-family: var(--font-mono);" id="scanned-cal-val">330 kcal</strong>
-                            </div>
-                            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">Protein</div>
-                                <strong style="font-size: 1.15rem; font-family: var(--font-mono); color: var(--accent-sapphire);" id="scanned-p-val">41.0g</strong>
-                            </div>
-                            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">Carbs</div>
-                                <strong style="font-size: 1.15rem; font-family: var(--font-mono); color: var(--accent-amber);" id="scanned-c-val">5.0g</strong>
-                            </div>
-                            <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); text-align: center;">
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">Fats</div>
-                                <strong style="font-size: 1.15rem; font-family: var(--font-mono); color: var(--accent-coral);" id="scanned-f-val">17.0g</strong>
-                            </div>
-                        </div>
-
-                        <!-- Portion Sizing -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">Serving Amount:
-                                <select id="scan-portion-select" onchange="adjustScanPortion()" style="background: var(--bg-surface); color: #ffffff; border: 1px solid var(--border-subtle); padding: 6px 12px; border-radius: 6px; margin-left: 6px;">
-                                    <option value="150">Small (150g)</option>
-                                    <option value="200" selected>Standard (200g)</option>
-                                    <option value="300">Large (300g)</option>
-                                </select>
-                            </label>
-                            <button class="btn btn-primary" onclick="logScannedToDiary()">+ Add to Meal Diary</button>
-                        </div>
-
-                        <!-- GenAI Breakdown -->
-                        <div style="background: var(--bg-surface); border-left: 3px solid var(--accent-emerald); padding: 14px; border-radius: 4px; font-size: 0.88rem; line-height: 1.5;" id="scanned-coach-txt">
-                            Rich in omega-3 EPA/DHA fatty acids and high-biological-value protein. Sustains peptide YY release while maintaining your calorie deficit.
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <section class="main-view-section" id="section-scanner"><h2>Food photo recognition</h2><p>Photo recognition is not configured. Use + Log Food to enter a food and confirm its calories and macros.</p></section>
 
             <!-- =========================================================================
                  SECTION 4: CHRONO-NUTRITION (RNN/LSTM)
                  ========================================================================= -->
-            <section class="main-view-section" id="section-patterns">
-                <div class="card" style="margin-bottom: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <div>
-                            <span class="macro-badge badge-prot">Recurrent Neural Sequence Model (RNN/LSTM)</span>
-                            <h2 style="font-size: 1.4rem; font-weight: 800; margin-top: 6px;">Circadian Cadence & Time-Series Forecast</h2>
-                        </div>
-                        <span class="macro-badge badge-cal" id="rnn-pattern-archetype">Consistent & Optimal Rhythm</span>
-                    </div>
-
-                    <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;">
-                        The recurrent model tracks your meal timing intervals and multi-day caloric distribution. Current temporal pattern shows balanced front-loading with stable insulin response and zero late-night metabolic spikes.
-                    </p>
-
-                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Forecasted Next-Day Intake</div>
-                            <div style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-emerald);" id="rnn-forecast-cal">1,840 kcal</div>
-                        </div>
-                        <div class="macro-badge badge-cal" style="padding: 6px 14px; font-size: 0.85rem;">Status: On-Target Equilibrium</div>
-                    </div>
-                </div>
-            </section>
+            <section class="main-view-section" id="section-patterns"><h2>Your eating history</h2><p>Open Weekly Audit to see averages calculated from your logged meals. Forecasting is unavailable until a trained model is configured.</p></section>
         </main>
     </div>
 
@@ -489,7 +383,7 @@
             <div class="auth-header">
                 <div style="font-size: 2.2rem; margin-bottom: 8px;">🥗</div>
                 <h3 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">NutriAI Personal Gateway</h3>
-                <p>Personalized Clinical Nutrition & Metabolic Health Assistant</p>
+                <p>Personalized Nutrition Tracking Assistant</p>
             </div>
 
             <!-- Feedback Alert -->
@@ -513,33 +407,6 @@
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 0.95rem; margin-top: 6px;">Sign In to Personal Dashboard</button>
                 </form>
 
-                <div class="auth-divider" style="margin-top: 22px;">
-                    <span>OR TAP QUICK TEST PROFILE</span>
-                </div>
-
-                <div class="auth-demo-chips">
-                    <div class="demo-chip" onclick="fillDemoCredentials('alex')">
-                        <div>
-                            <div class="demo-chip-name">Alex Morgan (Fat Loss Deficit)</div>
-                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 1,850 kcal • 135g Protein</div>
-                        </div>
-                        <div class="demo-chip-meta">📱 +1 555-0199</div>
-                    </div>
-                    <div class="demo-chip" onclick="fillDemoCredentials('sarah')">
-                        <div>
-                            <div class="demo-chip-name">Sarah Chen (Keto Protocol)</div>
-                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 2,100 kcal • 140g Protein</div>
-                        </div>
-                        <div class="demo-chip-meta">📱 +1 555-0288</div>
-                    </div>
-                    <div class="demo-chip" onclick="fillDemoCredentials('marcus')">
-                        <div>
-                            <div class="demo-chip-name">Marcus Vance (Hypertrophy Athlete)</div>
-                            <div style="font-size: 0.73rem; color: #94a3b8;">Target: 3,100 kcal • 195g Protein</div>
-                        </div>
-                        <div class="demo-chip-meta">📱 +1 555-0377</div>
-                    </div>
-                </div>
             </div>
 
             <!-- TAB 2: REGISTER (Full Name + Phone Number + Specific Password + Target) -->
@@ -638,12 +505,12 @@
         </div>
     </div>
 
-    <!-- Clinical Audit Report Modal -->
+    <!-- Weekly Report Report Modal -->
     <div class="auth-modal-overlay" id="audit-modal" style="display: none;">
         <div class="auth-modal-card" style="width: 650px; max-height: 85vh; overflow-y: auto;">
             <div class="auth-header" style="text-align: left;">
-                <h3>📑 Clinical Nutrition Performance Audit</h3>
-                <p id="audit-subtitle">7-Day Multi-Parameter Metabolic Evaluation</p>
+                <h3>📑 Weekly Nutrition Report</h3>
+                <p id="audit-subtitle">Summary of your recorded meals and hydration</p>
             </div>
             <div id="audit-report-content" style="font-size: 0.9rem; line-height: 1.6; color: #cbd5e1;"></div>
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">

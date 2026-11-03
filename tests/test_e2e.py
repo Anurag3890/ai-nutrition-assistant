@@ -13,6 +13,8 @@ Validates all 10 modules working together in harmony:
 """
 
 import os
+import io
+import tempfile
 import sys
 import unittest
 from datetime import date
@@ -35,7 +37,9 @@ from data.nutrition_data_store import NutritionDataStore
 class TestAINutritionAssistantE2E(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.data_store = NutritionDataStore()
+        cls.temp = tempfile.TemporaryDirectory(dir=os.path.dirname(__file__))
+        cls.addClassCleanup(cls.temp.cleanup)
+        cls.data_store = NutritionDataStore(os.path.join(cls.temp.name, "test.db"))
         cls.user_id = cls.data_store.seed_initial_data()
 
     def test_module_1_preprocessing(self):

@@ -1149,3 +1149,22 @@ body {
     .oracle-presets-grid { grid-template-columns: 1fr 1fr; }
     .scanner-view-container { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 760px) {
+    .app-layout { flex-direction: column; }
+    .sidebar { width: 100%; padding: 12px; }
+    .sidebar .logo { padding-bottom: 10px; }
+    .nav-menu { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+    .nav-item { width: auto; padding: 10px; font-size: 0.75rem; }
+    .user-badge-sidebar { margin-top: 8px; }
+    .main-content { padding: 16px; min-width: 0; }
+    .top-bar { align-items: flex-start; flex-direction: column; gap: 16px; }
+    .header-actions { flex-wrap: wrap; }
+    .macro-cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .macro-values { font-size: 1.5rem; }
+    .macro-card { padding: 14px; }
+    .oracle-presets-grid { grid-template-columns: 1fr; }
+    .oracle-hero { flex-direction: column; }
+    .auth-modal-card { max-height: 90vh; overflow-y: auto; }
+    .subtitle, .m-name { overflow-wrap: anywhere; }
+}

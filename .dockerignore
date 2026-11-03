@@ -1,0 +1,12 @@
+.git
+.env*
+node_modules
+app
+work
+tests
+__pycache__
+**/__pycache__
+*.db
+**/*.db
+**/*.db-*
+data/storage

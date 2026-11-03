@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "NutriAI",
+    "slug": "nutriai",
+    "version": "1.1.0",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a meal photo to review its nutrition.",
+          "cameraPermission": "Take a meal photo to review its nutrition.",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}

@@ -1,20 +1,17 @@
-# Implementation status
+# Module status
 
-The repository is a functional tracking prototype. Earlier claims that all ten AI
-modules were production-ready were inaccurate.
-
-| Module | Current state | Remaining |
+| Area | Implemented | Verification boundary |
 |---|---|---|
-| Preprocessing | Resize/normalization utilities and simulation tests | Real dataset curation and validation |
-| CNN recognition | Educational random-score simulation; disabled in API | Trained model or vision provider and accuracy evaluation |
-| Nutrition mapping | Small local demonstration catalog | Sourced food search and broader nutrient coverage |
-| ANN evaluation | Network trained on ten synthetic meal examples | Representative data, validation and model persistence |
-| RNN patterns | Untrained experimental RNN retained for education | Trained/validated model; production API shows recorded totals only |
-| Coach/oracle | Local template responses | Actual LLM integration and advice evaluation |
-| Backend | Authenticated, validated tracking APIs | Recovery, throttling and operational hardening |
-| Persistence | SQLite meals, water, biometrics, targets and sessions | Deployment backups and migration tooling |
-| Clients | Web and Expo clients use shared APIs | Camera, richer editing/biometric UI, native device verification |
-| Delivery | Isolated Python tests and CI including Docker smoke test | Verify production deployment and monitor operation |
+| Accounts | Canonical phones, hashed passwords, atomic signup, expiring sessions, recovery codes, password changes, optional SMS verification/reset, export/deletion | SMS delivery needs a configured provider and real-number testing |
+| Profile | Adult onboarding, activity/preferences/allergies, timezone, editable targets, synchronized dated weight | Personal targets remain estimates, not clinical advice |
+| Journal | Meal create/edit/delete, portions, dated history, water, sleep/energy/weight check-ins | Partial logs cannot establish full intake |
+| Nutrition data | 374 attributed USDA Foundation Foods, local search and optional live USDA search, recorded micronutrients and source metadata | Missing nutrients remain unknown; local catalog is a subset |
+| Coach | Persisted conversation; configurable Responses API integration and grounded offline record summaries | Mocked contracts tested; live model quality must be evaluated |
+| Photos | Native camera/library and web upload, size/format checks, metadata removal, validated structured estimates and confirmation | Disabled without provider; portion accuracy is not guaranteed |
+| Progress | Timezone-aware descriptive totals, missing-day handling, batch SQL aggregation, weight history | No trained or validated predictive model is supplied |
+| Web | Responsive journal/progress/coach/settings, keyboard-friendly dialogs, form errors and loading states | Browser checks cover desktop/tablet/phone widths |
+| Mobile | Matching visual language, shared APIs, OS secure token storage, editing/check-ins/profile/security/photo flows | Web target builds and connects; native devices still need testing |
+| Operations | Versioned migrations, SQLite backup/verify/restore, readiness, request IDs, optional request logs, CI | Hosting, HTTPS, off-host backups, monitoring and scale are deployment-specific |
 
-Run instructions and configuration are in README.md. Historical architecture and
-master reference files describe intended scope, not verified feature completion.
+Legacy experimental CNN/ANN/RNN code is retained for educational tests. It is not
+used as proof of production food recognition or forecasting accuracy.

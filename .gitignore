@@ -42,3 +42,14 @@ data/storage/
 *.db-shm
 work/
 tests/tmp*/
+
+# Browser test artifacts
+playwright-report/
+test-results/
+
+# Private database snapshots
+backups/
+*.db
+*.sqlite
+*.sqlite-*
+*.before-restore-*

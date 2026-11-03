@@ -15,12 +15,19 @@ Features:
 
 import os
 import sqlite3
+from contextlib import contextmanager
 import json
 import uuid
+import secrets
+import time
+if __package__:
+    from data.security import hash_password, verify_password, token_digest
+else:
+    from security import hash_password, verify_password, token_digest
 from datetime import datetime, date
 from typing import Dict, List, Optional, Any, Tuple
 
-DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), "nutrition_master.db")
+DEFAULT_DB_PATH = os.getenv("NUTRIAI_DB_PATH", os.path.join(os.path.dirname(__file__), "storage", "nutrition.db"))
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "nutrition_schema.sql")
 
 class NutritionDataStore:
@@ -28,14 +35,20 @@ class NutritionDataStore:
         self.db_path = db_path
         self._init_db()
 
-    def _get_connection(self) -> sqlite3.Connection:
+    @contextmanager
+    def _get_connection(self):
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
-        return conn
+        conn.execute("PRAGMA foreign_keys = ON")
+        try:
+            with conn:
+                yield conn
+        finally:
+            conn.close()
 
     def _init_db(self):
         """Initializes database schema from schema.sql or embedded statements."""
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.abspath(self.db_path)), exist_ok=True)
         with self._get_connection() as conn:
             if os.path.exists(SCHEMA_PATH):
                 with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
@@ -50,6 +63,14 @@ class NutritionDataStore:
                 conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
             except Exception:
                 pass
+            conn.execute("CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires_at REAL NOT NULL)")
+            conn.execute("CREATE TABLE IF NOT EXISTS auth_attempts (bucket TEXT NOT NULL, attempted_at REAL NOT NULL)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_auth_attempts ON auth_attempts(bucket, attempted_at)")
+            # Upgrade legacy plaintext credentials before accepting requests.
+            for row in conn.execute("SELECT id, password_hash FROM users").fetchall():
+                password = row["password_hash"]
+                if password and not password.startswith("pbkdf2_sha256$"):
+                    conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_password(password), row["id"]))
             conn.commit()
 
     # ---------------------------------------------------------
@@ -106,23 +127,18 @@ class NutritionDataStore:
         else:
             target_calories = tdee
 
-        # Macro split estimates:
-        # Protein: 2.0g per kg of bodyweight
-        protein_target = round(weight * 2.0, 1)
-        # Fat: 25% of calories (9 kcal/g)
-        fat_target = round((target_calories * 0.25) / 9.0, 1)
-        # Carbs: Remainder of calories (4 kcal/g)
-        carbs_cal = target_calories - (protein_target * 4 + fat_target * 9)
-        carbs_target = round(max(carbs_cal / 4.0, 50.0), 1)
-
         calorie_target = user_data.get("daily_calorie_target", target_calories)
-        protein_target = user_data.get("daily_protein_target_g", protein_target)
-        carbs_target = user_data.get("daily_carbs_target_g", carbs_target)
-        fat_target = user_data.get("daily_fat_target_g", fat_target)
+        protein_target = user_data.get("daily_protein_target_g", round(weight * 2.0, 1))
+        fat_target = user_data.get("daily_fat_target_g", round(calorie_target * 0.25 / 9.0, 1))
+        carbs_target = user_data.get("daily_carbs_target_g", round(max((calorie_target - protein_target * 4 - fat_target * 9) / 4, 0), 1))
         water_target = user_data.get("daily_water_target_ml", 2800.0)
 
         phone_num = user_data.get("phone_number", "")
-        pwd_hash = user_data.get("password_hash") or user_data.get("password", "")
+        password = user_data.get("password")
+        pwd_hash = hash_password(password) if password else None
+        # Existing encoded credentials may be passed by internal callers only.
+        if pwd_hash is None and user_data.get("password_hash", "").startswith("pbkdf2_sha256$"):
+            pwd_hash = user_data["password_hash"]
 
         with self._get_connection() as conn:
             conn.execute("""
@@ -171,7 +187,7 @@ class NutritionDataStore:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
             row = cursor.fetchone()
-            return dict(row) if row else None
+            return self.public_user(dict(row)) if row else None
 
     def get_user_by_phone(self, phone: str) -> Optional[Dict[str, Any]]:
         clean_phone = "".join(filter(str.isalnum, phone))
@@ -179,7 +195,7 @@ class NutritionDataStore:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE phone_number = ? OR REPLACE(REPLACE(phone_number, '+', ''), ' ', '') LIKE ?", (phone, f"%{clean_phone}%"))
             row = cursor.fetchone()
-            return dict(row) if row else None
+            return self.public_user(dict(row)) if row else None
 
     def authenticate_user(self, phone_or_name: str, password: str) -> Optional[Dict[str, Any]]:
         clean_input = phone_or_name.strip()
@@ -192,9 +208,42 @@ class NutritionDataStore:
             row = cursor.fetchone()
             if row:
                 u = dict(row)
-                if not u.get("password_hash") or u.get("password_hash") == password:
-                    return u
+                if verify_password(password, u.get("password_hash", "")):
+                    return self.public_user(u)
             return None
+
+    @staticmethod
+    def public_user(user):
+        return {key: value for key, value in user.items() if key != "password_hash"}
+
+    def allow_auth_attempt(self, identifier, limit=10):
+        now = time.time()
+        bucket = token_digest(identifier)
+        with self._get_connection() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute("DELETE FROM auth_attempts WHERE attempted_at < ?", (now - 300,))
+            count = conn.execute("SELECT COUNT(*) FROM auth_attempts WHERE bucket = ?", (bucket,)).fetchone()[0]
+            if count >= limit:
+                return False
+            conn.execute("INSERT INTO auth_attempts VALUES (?, ?)", (bucket, now))
+        return True
+
+    def create_session(self, user_id):
+        token = secrets.token_urlsafe(32)
+        expires = time.time() + 7 * 24 * 3600
+        with self._get_connection() as conn:
+            conn.execute("DELETE FROM sessions WHERE expires_at <= ?", (time.time(),))
+            conn.execute("INSERT INTO sessions VALUES (?, ?, ?)", (token_digest(token), user_id, expires))
+        return token
+
+    def session_user(self, token):
+        with self._get_connection() as conn:
+            row = conn.execute("SELECT user_id FROM sessions WHERE token_hash = ? AND expires_at > ?", (token_digest(token), time.time())).fetchone()
+        return self.get_user(row["user_id"]) if row else None
+
+    def revoke_session(self, token):
+        with self._get_connection() as conn:
+            conn.execute("DELETE FROM sessions WHERE token_hash = ?", (token_digest(token),))
 
     # ---------------------------------------------------------
     # FOOD ITEM REFERENCE LIBRARY
@@ -309,6 +358,7 @@ class NutritionDataStore:
                     body_fat_pct=COALESCE(excluded.body_fat_pct, biometric_logs.body_fat_pct),
                     energy_level=COALESCE(excluded.energy_level, biometric_logs.energy_level),
                     sleep_hours=COALESCE(excluded.sleep_hours, biometric_logs.sleep_hours),
+                    sleep_quality=COALESCE(excluded.sleep_quality, biometric_logs.sleep_quality),
                     digestive_symptoms=COALESCE(excluded.digestive_symptoms, biometric_logs.digestive_symptoms),
                     notes=COALESCE(excluded.notes, biometric_logs.notes)
             """, (
@@ -450,30 +500,6 @@ class NutritionDataStore:
     # ---------------------------------------------------------
     # SEEDING INITIAL REALISTIC DATA FOR IMMEDIATE USE
     # ---------------------------------------------------------
-    def seed_initial_data(self) -> str:
-        """Populates realistic foods, an active user, and today's meal logs."""
-        # 1. Create User
-        user_id = "user_demo_01"
-        self.create_or_update_user({
-            "id": user_id,
-            "username": "alex_nutrition",
-            "email": "alex@example.com",
-            "full_name": "Alex Morgan",
-            "age": 27,
-            "sex": "female",
-            "height_cm": 168.0,
-            "current_weight_kg": 64.0,
-            "target_weight_kg": 60.0,
-            "activity_level": "moderately_active",
-            "primary_goal": "fat_loss",
-            "dietary_preference": "omnivore",
-            "daily_calorie_target": 1850.0,
-            "daily_protein_target_g": 135.0,
-            "daily_carbs_target_g": 180.0,
-            "daily_fat_target_g": 55.0,
-            "daily_water_target_ml": 2500.0
-        })
-
     def get_all_users(self) -> List[Dict[str, Any]]:
         with self._get_connection() as conn:
             cursor = conn.cursor()
